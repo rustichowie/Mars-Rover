@@ -11,9 +11,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import ontologies.GridField;
-import swing.LineComponent;
+import swing.GridComponent;
+import swing.BoardInstructionsComponent;
 import jade.core.Agent;
-import java.math.MathContext;
 import java.util.Random;
 
 public class SpaceshipAgent extends Agent {
@@ -22,7 +22,8 @@ public class SpaceshipAgent extends Agent {
 	private GridField[][] map;
 	private int dimensions;
 	private JFrame mapFrame;
-	private LineComponent lineComp;
+	private GridComponent gridComp;
+        private BoardInstructionsComponent boardComp;
 	private int gridSize;
 	private int xSpaceship;
 	private int ySpaceship;
@@ -32,7 +33,7 @@ public class SpaceshipAgent extends Agent {
 	protected void setup(){
 		Object[] args = getArguments();
 		
-		dimensions = Integer.parseInt((String) args[0]);
+		dimensions = 15;
 		gridSize = 25;
 		
 		map = new GridField[dimensions][dimensions];
@@ -41,9 +42,11 @@ public class SpaceshipAgent extends Agent {
 		mapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		mapFrame.setPreferredSize(new Dimension(800, 680));
 		
-		lineComp = new LineComponent();
-		lineComp.setPreferredSize(new Dimension(200, 200));
-		
+		gridComp = new GridComponent();
+		gridComp.setPreferredSize(new Dimension(200, 200));
+                
+                boardComp = new BoardInstructionsComponent();
+                
 		JButton button = new JButton("New Line");
 		
 		button.addActionListener(new ActionListener() {
@@ -55,15 +58,16 @@ public class SpaceshipAgent extends Agent {
 				int x2 = (int) (Math.random()*200);
 				int y2 = (int) (Math.random()*200);
 				Color randomColor = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
-				lineComp.addLine(x1, y1, x2, y2, randomColor);
+				gridComp.addGrid(x1, y1, x2, y2, randomColor, "");
 				
 			}
-		});;
+		});
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(button);
 		
-		mapFrame.getContentPane().add(lineComp, BorderLayout.CENTER);
+		mapFrame.getContentPane().add(gridComp, BorderLayout.CENTER);
+                mapFrame.getContentPane().add(boardComp, BorderLayout.WEST);
 		mapFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		
 		mapFrame.pack();
@@ -75,16 +79,38 @@ public class SpaceshipAgent extends Agent {
 		
 		printMap();
 		printSpaceshipLocation();
+                
                 initObstacles();
                 initRocks();
+                
+                printObsticlesAndRocks();
+                
+                printBoard();
 	}
 	
 	public void printSpaceshipLocation(){
-		lineComp.addLine(xSpaceship, ySpaceship, (xSpaceship+gridSize), (ySpaceship), Color.RED);
-		lineComp.addLine((xSpaceship+gridSize), ySpaceship, (xSpaceship+gridSize), (ySpaceship+gridSize), Color.RED);
-		lineComp.addLine((xSpaceship+gridSize), (ySpaceship+gridSize), (xSpaceship), (ySpaceship+gridSize), Color.RED);
-		lineComp.addLine(xSpaceship, ySpaceship, (xSpaceship), (ySpaceship+gridSize), Color.RED);
+		gridComp.addGrid(xSpaceship, ySpaceship, gridSize, gridSize, Color.BLUE, "S");
 	}
+        
+        public void printBoard(){
+            boardComp.addText("Spaceship = S", "Obsticles = O", "Number of Rocks in gridfield = Number");
+        }
+        
+        public void printObsticlesAndRocks(){
+            for(int tx = 0; tx < dimensions; tx++){
+                for(int ty = 0; ty < dimensions; ty++){
+                    int i = ((tx+1)*gridSize) + 50;
+                    int j = ((ty+1)*gridSize) + 50;
+                    if(map[tx][ty].isObstacle()){
+                        gridComp.addGrid(i, j, gridSize, gridSize, new Color(229, 24, 24), "O");
+                    }
+                    if(map[tx][ty].getNumberOfRocks() != 0){
+                        gridComp.addGrid(i, j, gridSize, gridSize, new Color(52, 181, 95), "" + map[tx][ty].getNumberOfRocks());
+                    }
+                    
+                }
+            }
+        }
 			
 	public void printMap(){
 
@@ -94,11 +120,8 @@ public class SpaceshipAgent extends Agent {
 				int y = ((ty+1)*gridSize) + 50;
                                 int ss = (Math.abs(xSpaceshipGridPos - tx)+Math.abs(ySpaceshipGridPos - ty));
 				
-				lineComp.addLine(x, y, (x+gridSize), (y), Color.BLACK);
-				lineComp.addLine((x+gridSize), y, (x+gridSize), (y+gridSize), Color.BLACK);
-				lineComp.addLine((x+gridSize), (y+gridSize), (x), (y+gridSize), Color.BLACK);
-				lineComp.addLine(x, y, (x), (y+gridSize), Color.BLACK);		
-                                
+				gridComp.addGrid(x, y, gridSize, gridSize, Color.BLACK, "");
+				
                                 map[ty][ty].setSignalStrength(ss);
 			}
                         
@@ -111,8 +134,8 @@ public class SpaceshipAgent extends Agent {
        
             int count = 0;
             while(count < noOfObstacles){
-                int i = rand.nextInt(dimensions+1);
-                int j = rand.nextInt(dimensions+1);
+                int i = rand.nextInt(dimensions);
+                int j = rand.nextInt(dimensions);
                 
                 if(!map[i][j].isObstacle() && !map[i][j].isSpaceship()){
                     map[i][j].setObstacle(true);
@@ -128,8 +151,8 @@ public class SpaceshipAgent extends Agent {
             int noOfRocks = (rand.nextInt(6) + 10);
             
             while(count < noOfRocks){
-                int i = rand.nextInt(dimensions+1);
-                int j = rand.nextInt(dimensions+1);
+                int i = rand.nextInt(dimensions);
+                int j = rand.nextInt(dimensions);
                 
                 if(!map[i][j].isObstacle() && !map[i][j].isSpaceship() && map[i][j].getNumberOfRocks() == 0){
                     int cluster = rand.nextInt(10)+1;
@@ -198,5 +221,4 @@ public class SpaceshipAgent extends Agent {
 			}
 		}
 	}
-	
 }
