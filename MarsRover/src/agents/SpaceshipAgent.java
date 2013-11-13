@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import ontologies.GridField;
 import swing.LineComponent;
 import jade.core.Agent;
+import java.math.MathContext;
 
 public class SpaceshipAgent extends Agent {
 
@@ -24,6 +25,8 @@ public class SpaceshipAgent extends Agent {
 	private int gridSize;
 	private int xSpaceship;
 	private int ySpaceship;
+        private int xSpaceshipGridPos;
+        private int ySpaceshipGridPos;
 	
 	protected void setup(){
 		Object[] args = getArguments();
@@ -81,32 +84,30 @@ public class SpaceshipAgent extends Agent {
 	}
 			
 	public void printMap(){
+
 		for(int tx = 0; tx < dimensions; tx++){
 			for(int ty = 0; ty < dimensions; ty++){
 				int x = ((tx+1)*gridSize) + 50;
 				int y = ((ty+1)*gridSize) + 50;
+                                int ss = (Math.abs(xSpaceshipGridPos - tx)+Math.abs(ySpaceshipGridPos - ty));
 				
 				lineComp.addLine(x, y, (x+gridSize), (y), Color.BLACK);
 				lineComp.addLine((x+gridSize), y, (x+gridSize), (y+gridSize), Color.BLACK);
 				lineComp.addLine((x+gridSize), (y+gridSize), (x), (y+gridSize), Color.BLACK);
-				lineComp.addLine(x, y, (x), (y+gridSize), Color.BLACK);
-				
-	//			printSingleField(map[tx][ty], x, y);
-				
-	/*			lineComp.addLine(x, y, (x+10), (y), Color.BLACK);
-				lineComp.addLine(x, y, (x), (y+10), Color.BLACK);
-				lineComp.addLine((x+10), (y), (x+10), (y+1), Color.BLACK);
-				lineComp.addLine((x), (y+10), (x+10), (y+10), Color.BLACK);
-		*/	}
+				lineComp.addLine(x, y, (x), (y+gridSize), Color.BLACK);		
+                                
+                                map[ty][ty].setSignalStrength(ss);
+			}
+                        
 		}
 	}
 	
 	public void setSpaceshipLocation(){
-		int x = (int) (Math.random() * dimensions);
-		int y = (int) (Math.random() * dimensions);
-		map[x][y].setSpaceship(true);
-		xSpaceship = ((x+1)*gridSize) + 50;
-		ySpaceship = ((y+1)*gridSize) + 50;
+		xSpaceshipGridPos = (int) (Math.random() * dimensions);
+		ySpaceshipGridPos = (int) (Math.random() * dimensions);
+		map[xSpaceshipGridPos][ySpaceshipGridPos].setSpaceship(true);
+		xSpaceship = ((xSpaceshipGridPos+1)*gridSize) + 50;
+		ySpaceship = ((ySpaceshipGridPos+1)*gridSize) + 50;
 	}
 	
 	public void printSingleField(GridField gf, int x, int y){
