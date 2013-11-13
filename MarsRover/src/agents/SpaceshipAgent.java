@@ -14,6 +14,7 @@ import ontologies.GridField;
 import swing.LineComponent;
 import jade.core.Agent;
 import java.math.MathContext;
+import java.util.Random;
 
 public class SpaceshipAgent extends Agent {
 
@@ -74,6 +75,8 @@ public class SpaceshipAgent extends Agent {
 		
 		printMap();
 		printSpaceshipLocation();
+                initObstacles();
+                initRocks();
 	}
 	
 	public void printSpaceshipLocation(){
@@ -102,6 +105,45 @@ public class SpaceshipAgent extends Agent {
 		}
 	}
 	
+        public void initObstacles(){
+            Random rand = new Random();
+            int noOfObstacles = (rand.nextInt(4) + 3);
+       
+            int count = 0;
+            while(count < noOfObstacles){
+                int i = rand.nextInt(dimensions+1);
+                int j = rand.nextInt(dimensions+1);
+                
+                if(!map[i][j].isObstacle() && !map[i][j].isSpaceship()){
+                    map[i][j].setObstacle(true);
+                    count++;
+                }
+            }
+            
+        }
+        
+        public void initRocks(){
+            Random rand = new Random();
+            int count = 0;
+            int noOfRocks = (rand.nextInt(6) + 10);
+            
+            while(count < noOfRocks){
+                int i = rand.nextInt(dimensions+1);
+                int j = rand.nextInt(dimensions+1);
+                
+                if(!map[i][j].isObstacle() && !map[i][j].isSpaceship() && map[i][j].getNumberOfRocks() == 0){
+                    int cluster = rand.nextInt(10)+1;
+                    if(cluster < 4){
+                        map[i][j].setNumberOfRocks(1);
+                    }
+                    else {
+                        map[i][j].setNumberOfRocks(cluster);
+                    }
+                    count++;
+                }
+            }
+        }
+        
 	public void setSpaceshipLocation(){
 		xSpaceshipGridPos = (int) (Math.random() * dimensions);
 		ySpaceshipGridPos = (int) (Math.random() * dimensions);
