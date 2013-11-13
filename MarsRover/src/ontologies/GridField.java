@@ -8,8 +8,9 @@ public class GridField {
 	private boolean bottom;
 	private boolean spaceship;
 	private int numberOfRocks;
-	private boolean grain;
+	private int grain;
 	private int signalStrength;
+        private boolean obstacle;
         
 	public GridField(){
 		this.left = true;
@@ -18,12 +19,14 @@ public class GridField {
 		this.bottom = true;
 		this.spaceship = false;
 		this.numberOfRocks = 0;
-		this.grain = false;
+		this.grain = 0;
                 this.signalStrength = 0;
+                this.obstacle = false;
+                
 	}
 	
 	public GridField(boolean left, boolean right, boolean top, boolean bottom, boolean spaceship, 
-                            boolean rocks, int numberOfRocks, boolean grain, int signalStrength){
+                            boolean rocks, int numberOfRocks, int grain, int signalStrength, boolean obstacle){
 		this.left = left;
 		this.right = right;
 		this.top = top;
@@ -32,6 +35,7 @@ public class GridField {
 		this.numberOfRocks = numberOfRocks;
 		this.grain = grain;
                 this.signalStrength = signalStrength;
+                this.obstacle = obstacle;
 	}
 	
 	public boolean isLeft() {
@@ -70,10 +74,10 @@ public class GridField {
 	public void setNumberOfRocks(int numberOfRocks) {
 		this.numberOfRocks = numberOfRocks;
 	}
-	public boolean isGrain() {
+	public int isGrain() {
 		return grain;
 	}
-	public void setGrain(boolean grain) {
+	public void setGrain(int grain) {
 		this.grain = grain;
 	}
 
@@ -83,6 +87,14 @@ public class GridField {
 
     public void setSignalStrength(int signalStrength) {
         this.signalStrength = signalStrength;
+    }
+
+    public boolean isObstacle() {
+        return obstacle;
+    }
+
+    public void setObstacle(boolean obstacle) {
+        this.obstacle = obstacle;
     }
 	
 }
