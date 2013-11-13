@@ -4,11 +4,18 @@
  */
 package agents;
 
+import behaviours.CustomReceiverBehaviour;
+import behaviours.MarsRoverBehaviour;
+import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.ReceiverBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 /**
  *
@@ -19,9 +26,13 @@ public class MarsRoverAgent extends Agent {
     private int posX;
     private int posY;
     private boolean hasRock;
-    private SpaceshipAgent spaceshipAgent;
+    private AID spaceshipAgent;
 
     protected void setup() {
+
+
+
+
         try {
             //Registers the agent to DF
             DFService.register(this, getDFAgentDescription());
@@ -29,7 +40,20 @@ public class MarsRoverAgent extends Agent {
         } catch (FIPAException fe) {
             fe.printStackTrace();
         }
-
+        MessageTemplate tmpl = MessageTemplate.MatchPerformative(ACLMessage.CFP);
+        addBehaviour(new CustomReceiverBehaviour(this, -1, tmpl) {
+            public void handle(ACLMessage msg) {
+                System.out.println("R1:");
+                if (msg == null) {              
+                    block();
+                } else {
+                    String[] coordinates = msg.getContent().split("-");
+                    posX = Integer.parseInt(coordinates[0]);
+                    posY = Integer.parseInt(coordinates[1]);
+                    addBehaviour(new MarsRoverBehaviour(myAgent));
+                }
+            }
+        });
 
     }
 
@@ -54,7 +78,7 @@ public class MarsRoverAgent extends Agent {
     /**
      * Gets all carriers that is regstrered to the DFAgentDescription
      */
-    private SpaceshipAgent getSpaceship() {
+    private AID getSpaceship() {
 
         DFAgentDescription dfAgentDescription = new DFAgentDescription();
 
@@ -67,15 +91,15 @@ public class MarsRoverAgent extends Agent {
             DFAgentDescription[] result = DFService.search(this, dfAgentDescription);
             System.out.println();
             System.out.println("----< Company found following carriers >----");
-            for (int i = 0; i < result.length; i++) {
-                
+            if (result.length != 0) {
+                return result[0].getName();
+            } else {
+                doDelete();
+                return null;
             }
-            
-
         } catch (FIPAException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public int getPosX() {
