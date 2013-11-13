@@ -27,7 +27,7 @@ public class GridComponent extends JComponent {
 		for( Grid grid : gridList ){
 			g.setColor(grid.getColor());
                         g.drawRect(grid.getX(), grid.getY(), grid.getWidth(), grid.getHeigth());
-			
+			g.drawString(grid.getText(), grid.getX()+5, grid.getY()+(grid.getHeigth()-5));
 		}
 	}
 }
