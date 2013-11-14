@@ -66,7 +66,7 @@ public class MarsRoverAgent extends Agent {
 
         ServiceDescription serviceDescription = new ServiceDescription();
         serviceDescription.setName(getLocalName());
-        serviceDescription.setType("company-agent");
+        serviceDescription.setType("rover-agent");
 
         DFAgentDescription dfAgentDescription = new DFAgentDescription();
         dfAgentDescription.setName(getAID());
