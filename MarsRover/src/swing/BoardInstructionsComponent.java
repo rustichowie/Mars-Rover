@@ -35,13 +35,13 @@ public class BoardInstructionsComponent extends JComponent {
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        g.setColor(Color.BLACK);
-        g.drawRect(10, 10, 100, 200 );
-        g.drawString(spaceship, 820, 60);
+        g.drawRect(10, 10, 80, 80 );
+        g.setColor(Color.BLUE);
+        g.drawString(spaceship, 20, 30);
         g.setColor( new Color(229, 24, 24));
-        g.drawString(obsticles, 850, 60);
+        g.drawString(obsticles, 20, 50);
         g.setColor( new Color(52, 181, 95));
-        g.drawString(rocks, 880, 60);
+        g.drawString(rocks, 20, 70);
     }
         
     public String getSpaceship() {
