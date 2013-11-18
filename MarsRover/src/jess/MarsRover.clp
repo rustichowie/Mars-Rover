@@ -130,7 +130,7 @@ else
 ))))
 
 (deffunction better_signal (?this ?next)
-    (if(< ?this.signal ?next.signal) then
+    (if(> ?this.signal ?next.signal) then
         (return true)
      else 
         (return false)))
