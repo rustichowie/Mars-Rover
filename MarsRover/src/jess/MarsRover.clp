@@ -48,7 +48,8 @@
 (if (= ?rover.carrying false) then
 (next_direction ?left ?right ?top ?bottom)
 
-(store direction (?directions get (?rand nextInt (?directions size))))
+(if (> (?directions size) 0) then
+(store direction (?directions get (?rand nextInt (?directions size)))))
 
 else
 (go_home ?left ?right ?top ?bottom ?this)
@@ -91,17 +92,19 @@ else
 )
 
 (deffunction go_home(?left ?right ?top ?bottom ?this)
-    (bind ?dir_ok false)
     (?directions clear)
-    (foreach ?dir (create$ ?left ?right ?top ?bottom)
-        
-        (if (and(= (check_dir ?dir) true)(= (better_signal ?this ?dir) true)) then
-			(?directions add ?dir.direction)
-			(bind ?dir_ok true)
-			(break)))
-			
-	(if (= ?dir_ok false) then
-		(?directions add ?came_from))
+    (if(and(= (check_dir ?left) true)(< ?left.signal ?this.signal)) then
+        (?directions add ?left.direction)
+     )   
+     (if(and (= (check_dir ?top) true)(< ?top.signal ?this.signal)) then
+        (?directions add ?top.direction))
+     (if(and (= (check_dir ?right) true)(< ?right.signal ?this.signal)) then
+        (?directions add ?right.direction))
+     (if(and (= (check_dir ?bottom) true)(< ?bottom.signal ?this.signal)) then
+        (?directions add ?bottom.direction))
+      (if (= (?directions isEmpty) true) then
+        (next_direction ?left ?right ?top ?bottom))
+      (return nil)
 )		
 
 (deffunction next_direction (?left ?right ?top ?bottom)

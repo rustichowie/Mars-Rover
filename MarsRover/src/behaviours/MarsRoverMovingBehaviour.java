@@ -75,6 +75,10 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
         try {
             util.search(left, right, top, bottom, current);
             ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
+             ACLMessage updateRover = new ACLMessage(ACLMessage.INFORM);
+            inform.setConversationId("update-grid");
+            updateRover.setConversationId("update-rover");
+            updateRover.addReceiver(myAgent.getSpaceshipAgent());
             inform.addReceiver(myAgent.getSpaceshipAgent());
             GridField change = current;
             
@@ -121,12 +125,13 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
                     break;
             }
             if(util.alert()){
-                //inform.setContent(current.getX()+"-"+current.getY()+"-alert");
+                updateRover.setContent(current.getX()+"-"+current.getY()+"-alert");
             }
             else {
-                //inform.setContent(current.getX()+"-"+current.getY());
+                updateRover.setContent(current.getX()+"-"+current.getY());
             }
             inform.setContentObject(change);
+            myAgent.send(updateRover);
             myAgent.send(inform);
             Thread.sleep(2000);
             
