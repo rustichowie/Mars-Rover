@@ -56,7 +56,7 @@ public class JessUtil {
         return dir;
     }
     
-    public void getChanges(GridField gf, MarsRoverAgent rover) throws JessException{
+    public void pickup(GridField gf, MarsRoverAgent rover) throws JessException{
         
         String pickup = "";
         if(jess.fetch("pickup") != null)
@@ -67,6 +67,20 @@ public class JessUtil {
         if(pickup.equals("true")){
             gf.setNumberOfRocks(gf.getNumberOfRocks() - 1);
             rover.setHasRock(true);
+            jess.store("pickup", "false");
+        }    
+    }
+    
+    public void drop(MarsRoverAgent rover) throws JessException{
+        String drop = "";
+        if(jess.fetch("drop") != null)
+            drop = (String)jess.fetch("pickup").externalAddressValue(null);
+        else
+            drop = "false";
+        
+        if(drop.equals("true")){
+            jess.store("drop", "false");
+            rover.setHasRock(false);
         }    
     }
     

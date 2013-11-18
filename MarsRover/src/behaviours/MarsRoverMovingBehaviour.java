@@ -78,10 +78,11 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
             inform.addReceiver(myAgent.getSpaceshipAgent());
             GridField change = current;
             
-            util.getChanges(change, myAgent);
+            util.pickup(change, myAgent);
+            util.drop(myAgent);
             System.out.println("Current: " + current.getX() + " | " + current.getY());
             System.out.println("Agent: " + myAgent.getPosX() + " | " + myAgent.getPosY());
-            inform.setContentObject(change);
+            
             
             String direction = util.getNextDirection();
             
@@ -120,12 +121,12 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
                     break;
             }
             if(util.alert()){
-                inform.setContent(current.getX()+"-"+current.getY()+"-alert");
+                //inform.setContent(current.getX()+"-"+current.getY()+"-alert");
             }
             else {
-                inform.setContent(current.getX()+"-"+current.getY());
+                //inform.setContent(current.getX()+"-"+current.getY());
             }
-            
+            inform.setContentObject(change);
             myAgent.send(inform);
             Thread.sleep(2000);
             

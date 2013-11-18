@@ -40,17 +40,17 @@ public class SpaceshipBehaviour extends CyclicBehaviour{
                 Logger.getLogger(SpaceshipBehaviour.class.getName()).log(Level.SEVERE, null, ex);
             }
             sender = message.getSender();
-            String content = message.getContent();
-            String[] coords = content.split("-");
-            int x = Integer.parseInt(coords[0]);
-            int y = Integer.parseInt(coords[1]);
+           // String content = message.getContent();
+           // String[] coords = content.split("-");
+            //int x = Integer.parseInt(coords[0]);
+            /*int y = Integer.parseInt(coords[1]);
             String alert = "";
             if(coords.length > 2){
                 alert = coords[2];
-            }
+            }*/
             
             myAgent.updateGridField(field);
-            myAgent.updateRover(x, y);
+            myAgent.updateRover(field.getX(), field.getY());
             
             
             message = new ACLMessage( ACLMessage.INFORM );

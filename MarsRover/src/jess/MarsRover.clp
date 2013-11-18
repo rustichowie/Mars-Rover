@@ -42,13 +42,19 @@
 ?action <- (action (do move))
 =>
 (printout t "trying to move" crlf)
+(if (and (= ?rover.carrying true) (= ?this.is_spaceship true)) then
+ (assert (action (do drop)))
+)
 (if (= ?rover.carrying false) then
 (next_direction ?left ?right ?top ?bottom)
 
 (store direction (?directions get (?rand nextInt (?directions size))))
 
 else
-(go_home ?left ?right ?top ?bottom ?this))
+(go_home ?left ?right ?top ?bottom ?this)
+(store direction (?directions get (?rand nextInt (?directions size))))
+)
+
 (retract ?left)
 (retract ?right)
 (retract ?top)
@@ -79,26 +85,24 @@ else
 (defrule drop_rock
 ?action  <- (action(do drop))
 =>
+(store drop true)
 (modify ?rover (carrying false))
+(retract ?action)
 )
 
 (deffunction go_home(?left ?right ?top ?bottom ?this)
     (bind ?dir_ok false)
+    (?directions clear)
     (foreach ?dir (create$ ?left ?right ?top ?bottom)
-        (if (= ?dir.is_spaceship true) then
-            (assert (action (do drop)))
-            (break) 
-        else
+        
         (if (and(= (check_dir ?dir) true)(= (better_signal ?this ?dir) true)) then
-			(store direction ?dir.direction)
+			(?directions add ?dir.direction)
 			(bind ?dir_ok true)
-			(break))))
+			(break)))
 			
 	(if (= ?dir_ok false) then
-		(store direction ?came_from))
+		(?directions add ?came_from))
 )		
-			
-
 
 (deffunction next_direction (?left ?right ?top ?bottom)
     
@@ -113,7 +117,7 @@ else
      (if(= (check_dir ?bottom) true) then
         (?directions add ?bottom.direction))
       (if (= (?directions isEmpty) true) then
-        (store direction ?came_from))
+        (?directions add ?came_from))
       (return nil)
 )   
 
