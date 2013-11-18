@@ -262,7 +262,8 @@ public class SpaceshipAgent extends Agent {
 	for(int i = 0; i < dimensions; i++){
             for(int j = 0; j < dimensions; j++){
                 map[i][j] = new GridField();
-		
+		map[i][j].setX(i);
+                map[i][j].setY(j);
                 if(i == 0){
                     map[i][j].setLeft(false);
 		}

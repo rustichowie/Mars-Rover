@@ -52,6 +52,7 @@ public class MarsRoverAgent extends Agent {
                 if (msg == null) {              
                     block();
                 } else {
+                    setSpaceshipAgent(msg.getSender());
                     //String[] coordinates = msg.getContent().split("-");
                     //posX = Integer.parseInt(coordinates[0]);
                     //posY = Integer.parseInt(coordinates[1]);
@@ -134,6 +135,14 @@ public class MarsRoverAgent extends Agent {
     
     public GridField[][] getMap(){
         return map;
+    }
+
+    public AID getSpaceshipAgent() {
+        return spaceshipAgent;
+    }
+
+    public void setSpaceshipAgent(AID spaceshipAgent) {
+        this.spaceshipAgent = spaceshipAgent;
     }
     
 }

@@ -56,6 +56,32 @@ public class JessUtil {
         return dir;
     }
     
+    public void getChanges(GridField gf, MarsRoverAgent rover) throws JessException{
+        
+        String pickup = "";
+        if(jess.fetch("pickup") != null)
+            pickup = (String)jess.fetch("pickup").externalAddressValue(null);
+        else
+            pickup = "false";
+        
+        if(pickup.equals("true")){
+            gf.setNumberOfRocks(gf.getNumberOfRocks() - 1);
+            rover.setHasRock(true);
+        }    
+    }
+    
+    public boolean alert() throws JessException{
+        String alert = "";
+        if(jess.fetch("alert") != null)
+            alert = (String)jess.fetch("alert").externalAddressValue(null);
+        else
+            alert = "false";
+        
+        if(alert.equals("true"))
+            return true;
+        else
+            return false;
+    }
     public void search(GridField left, GridField right, GridField top, GridField bottom, GridField current) throws JessException{
         
         String left_assert = "(assert (gridbox (direction left) (signal "+left.getSignalStrength()+")"
@@ -82,14 +108,6 @@ public class JessUtil {
         this.makeassert(bottom_assert);
         this.makeassert(current_assert);
         jess.run();
-    }
-    
-    public void alert(){
-        
-    }
-    
-    public void pickup(GridField current){
-        
     }
     
     /**

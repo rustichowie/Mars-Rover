@@ -8,6 +8,7 @@ import agents.MarsRoverAgent;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jess.JessException;
@@ -22,6 +23,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
 
     private MarsRoverAgent myAgent;
     private JessUtil util;
+    private GridField current;
     
     public MarsRoverMovingBehaviour(MarsRoverAgent a, String file){
         myAgent = a;
@@ -34,7 +36,8 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
     @Override
     public void action() {
         GridField[][] map = myAgent.getMap();
-        GridField current = map[myAgent.getPosX()][myAgent.getPosY()];
+        current = map[myAgent.getPosX()][myAgent.getPosY()];
+        System.out.println("Current: " + current.getX() + " | " + current.getY());
         GridField left = null;
         GridField right = null;
         GridField top = null;
@@ -71,24 +74,64 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
         
         try {
             util.search(left, right, top, bottom, current);
+            ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
+            inform.addReceiver(myAgent.getSpaceshipAgent());
+            GridField change = current;
+            
+            util.getChanges(change, myAgent);
+            System.out.println("Current: " + current.getX() + " | " + current.getY());
+            System.out.println("Agent: " + myAgent.getPosX() + " | " + myAgent.getPosY());
+            inform.setContentObject(change);
             
             String direction = util.getNextDirection();
+            
+            for(int x = 0; x < map.length; x++){
+                for(int y = 0; y < map.length; y++)
+                    map[x][y].setCame_from(false);
+            }
+            map[current.getX()][current.getY()].setCame_from(true);
+            
             switch (direction) {
                 case "left":
+                    System.out.println("Going: " + direction);
+                    
+                    current = map[current.getX() - 1][current.getY()];
+                    myAgent.setPosX(current.getX());
+                    myAgent.setPosY(current.getY());
                     
                     break;
                 case "right":
+                    System.out.println("Going: " + direction);
+                    current = map[current.getX() + 1][current.getY()];
+                    myAgent.setPosX(current.getX());
+                    myAgent.setPosY(current.getY());
                     break;
                 case "top":
+                    System.out.println("Going: " + direction);
+                    current = map[current.getX()][current.getY() - 1];
+                    myAgent.setPosX(current.getX());
+                    myAgent.setPosY(current.getY());
                     break;
                 case "bottom":
-                
+                    System.out.println("Going: " + direction);
+                    current = map[current.getX()][current.getY() + 1];
+                    myAgent.setPosX(current.getX());
+                    myAgent.setPosY(current.getY());
                     break;
             }
+            if(util.alert()){
+                inform.setContent(current.getX()+"-"+current.getY()+"-alert");
+            }
+            else {
+                inform.setContent(current.getX()+"-"+current.getY());
+            }
             
-            Thread.sleep(1000);
+            myAgent.send(inform);
+            Thread.sleep(2000);
             
         } catch (JessException | InterruptedException ex) {
+            Logger.getLogger(MarsRoverMovingBehaviour.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(MarsRoverMovingBehaviour.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
