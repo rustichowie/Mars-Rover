@@ -34,7 +34,7 @@ public class SpaceshipAgent extends Agent {
     private JFrame mapFrame;
     private GridComponent gridComp;
     private BoardInstructionsComponent boardComp;
-    private RoverComponent roverComp;
+    private List<RoverComponent> roverComp;
     private int gridSize;
     private int xSpaceship;
     private int ySpaceship;
@@ -56,6 +56,13 @@ public class SpaceshipAgent extends Agent {
         setSpaceshipLocation();
 
         rovers = new ArrayList<>();
+        
+        try{
+            DFService.register(agent, getDFAgentDescription());
+            updateAvailableRovers();
+        }catch(FIPAException fe){
+            fe.printStackTrace();
+        }
 
         mapFrame = new JFrame();
         mapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -67,11 +74,15 @@ public class SpaceshipAgent extends Agent {
 
         boardComp = new BoardInstructionsComponent();
         boardComp.setPreferredSize(new Dimension(90, 90));
-
-        roverComp = new RoverComponent( xSpaceshipGridPos, ySpaceshipGridPos, "Lasse", gridSize);
-        roverComp.setPreferredSize(new Dimension( 200, 200 ));
-        roverComp.setBounds(0, 0, 600, 600);
-
+        
+        roverComp = new ArrayList<>();
+        for(AID aid : rovers){
+            RoverComponent rc = new RoverComponent(xSpaceshipGridPos, ySpaceshipGridPos, aid.getLocalName(), gridSize);
+            rc.setPreferredSize(new Dimension( 200, 200 ));
+            rc.setBounds(0, 0, 600, 600);
+            roverComp.add(rc);
+        }
+        
         JButton button = new JButton("Start Rovers");
         JButton moveNorth = new JButton("Move North");
         JButton moveEast = new JButton("Move East");
@@ -81,7 +92,9 @@ public class SpaceshipAgent extends Agent {
         JPanel compPanel = new JPanel();
         compPanel.setLayout(null);
         compPanel.add( gridComp, BorderLayout.CENTER );
-        compPanel.add( roverComp, BorderLayout.CENTER );
+        for(RoverComponent rc: roverComp){
+            compPanel.add( rc, BorderLayout.CENTER );
+        }
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(button);
@@ -109,12 +122,7 @@ public class SpaceshipAgent extends Agent {
 
         initButtonClicks(button, moveNorth, moveEast, moveSouth, moveWest );
 
-        try{
-            DFService.register(agent, getDFAgentDescription());
-            updateAvailableRovers();
-        }catch(FIPAException fe){
-            fe.printStackTrace();
-        }
+        
 
         addBehaviour(new SpaceshipUpdateGridBehaviour(this));
         addBehaviour(new SpaceshipUpdateRoverBehaviour(this));
@@ -177,8 +185,12 @@ public class SpaceshipAgent extends Agent {
         gridComp.updateGridField(field, gridSize, dimensions);
     }
     
-    public void updateRover(int x, int y){
-        roverComp.moveRover(x, y);
+    public void updateRover(AID aid, int x, int y){
+        for( RoverComponent rc: roverComp){
+            if(rc.getRoverName().equals(aid.getLocalName())){
+                rc.moveRover(x, y);
+            }
+        }
     }
         
     public void printSpaceshipLocation(){
@@ -306,7 +318,7 @@ public class SpaceshipAgent extends Agent {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-                roverComp.moveNorth();
+                roverComp.get(0).moveNorth();
             
             }
         });
@@ -315,7 +327,7 @@ public class SpaceshipAgent extends Agent {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-                roverComp.moveEast();
+                roverComp.get(0).moveEast();
             
             }
         });
@@ -324,7 +336,7 @@ public class SpaceshipAgent extends Agent {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-                roverComp.moveSouth();
+                roverComp.get(0).moveSouth();
             
             }
         });
@@ -333,7 +345,7 @@ public class SpaceshipAgent extends Agent {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-                roverComp.moveWest();
+                roverComp.get(0).moveWest();
             
             }
         });

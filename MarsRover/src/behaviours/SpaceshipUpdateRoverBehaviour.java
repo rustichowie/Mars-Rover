@@ -17,6 +17,7 @@ public class SpaceshipUpdateRoverBehaviour extends CyclicBehaviour{
     private SpaceshipAgent myAgent;
     private MessageTemplate template;
     private ACLMessage message;
+    private AID sender;
     	
     public SpaceshipUpdateRoverBehaviour(Agent agent){
         
@@ -30,15 +31,17 @@ public class SpaceshipUpdateRoverBehaviour extends CyclicBehaviour{
                 MessageTemplate.MatchPerformative(ACLMessage.INFORM), 
                 MessageTemplate.MatchConversationId("update-rover"));
         
-        message = myAgent.receive(template);
+        message = myAgent.receive( template );
         
         if(message != null){
+            sender = message.getSender();
             String content = message.getContent();
             String[] coords = content.split("-");
             int x = Integer.parseInt(coords[0]);
             int y = Integer.parseInt(coords[1]);
             
-            myAgent.updateRover(x, y);
+            myAgent.updateRover(sender, x, y);
+            System.out.println("Update rover");
             
         } else {
             block();
