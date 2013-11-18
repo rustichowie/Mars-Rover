@@ -1,7 +1,8 @@
 package agents;
 
 import behaviours.SendLocationBehaviour;
-import behaviours.SpaceshipBehaviour;
+import behaviours.SpaceshipUpdateGridBehaviour;
+import behaviours.SpaceshipUpdateRoverBehaviour;
 import jade.core.AID;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -115,7 +116,8 @@ public class SpaceshipAgent extends Agent {
             fe.printStackTrace();
         }
 
-        addBehaviour(new SpaceshipBehaviour(this));
+        addBehaviour(new SpaceshipUpdateGridBehaviour(this));
+        addBehaviour(new SpaceshipUpdateRoverBehaviour(this));
     }
 
     public List<AID> getRovers(){
