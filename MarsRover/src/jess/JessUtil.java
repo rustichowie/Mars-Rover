@@ -13,7 +13,7 @@ public class JessUtil {
 
     // class variables
     private Rete jess; // holds the pointer to jess
-    private Agent myAgent; // holds the pointer to this agent
+    private MarsRoverAgent myAgent; // holds the pointer to this agent
 
     /**
      * Creates a
@@ -22,10 +22,13 @@ public class JessUtil {
      * @param agent the agent that adds the behaviour
      * @param jessFile the name of the Jess file to be executed
      */
-    public JessUtil(Agent agent, String jessFile) {
+    public JessUtil(MarsRoverAgent agent, String jessFile) {
         jess = new Rete();
         try {
             jess.batch(jessFile);
+            String rover = "(bind ?rover (assert (rover (name "+agent.getLocalName()+") (carrying " + agent.hasRock()+"))))";
+            this.makeassert(rover);
+            jess.run();
         } catch (JessException ex) {
             Logger.getLogger(JessUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -47,8 +50,13 @@ public class JessUtil {
             re.printStackTrace(System.err);
         }
     }
-
-    public void search(GridField left, GridField right, GridField top, GridField bottom, GridField current, MarsRoverAgent roverAgent) throws JessException{
+    
+    public String getNextDirection() throws JessException{
+        String dir = (String)jess.fetch("direction").externalAddressValue(null);
+        return dir;
+    }
+    
+    public void search(GridField left, GridField right, GridField top, GridField bottom, GridField current) throws JessException{
         
         String left_assert = "(assert (gridbox (direction left) (signal "+left.getSignalStrength()+")"
                                     + " (obstacle "+left.isObstacle()+") (rocks "+left.getNumberOfRocks()+")"
@@ -67,14 +75,12 @@ public class JessUtil {
          String current_assert = "(assert (gridbox (direction this) (signal "+current.getSignalStrength()+")"
                                     + " (obstacle "+current.isObstacle()+") (rocks "+current.getNumberOfRocks()+")"
                                         + " (grain "+current.isGrain()+") (came_from "+current.isCame_from()+") (is_spaceship "+current.isSpaceship()+")))";
-         String rover = "(bind ?rover (assert (rover (name "+roverAgent.getLocalName()+") (carrying " + roverAgent.hasRock()+"))))";
         
         this.makeassert(left_assert);
         this.makeassert(top_assert);
         this.makeassert(right_assert);
         this.makeassert(bottom_assert);
         this.makeassert(current_assert);
-        this.makeassert(rover);
         jess.run();
     }
     

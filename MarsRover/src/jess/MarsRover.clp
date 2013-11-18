@@ -1,3 +1,5 @@
+(bind ?rand (new java.util.Random))
+(bind ?directions (new java.util.ArrayList))
 (deftemplate gridbox
     (slot direction)
     (slot obstacle)
@@ -37,15 +39,27 @@
 ?bottom <- (gridbox (direction bottom) (signal ?b_signal) (obstacle ?b_obs) (rocks ?b_rocks) (grain ?b_grain) (came_from ?b_came_from) (is_spaceship ?b_is_spaceship))
 ?this <- (gridbox (direction this) (signal ?this_signal) (obstacle ?this_obs) (rocks ?this_rocks) (grain ?this_grain) (came_from ?this_came_from) (is_spaceship ?this_is_spaceship))
 
-(action (do move))
+?action <- (action (do move))
 =>
 (printout t "trying to move" crlf)
 (if (= ?rover.carrying false) then
 (next_direction ?left ?right ?top ?bottom)
-(printout t (fetch direction) crlf)
+
+(store direction (?directions get (?rand nextInt (?directions size))))
+
 else
 (go_home ?left ?right ?top ?bottom ?this))
+(retract ?left)
+(retract ?right)
+(retract ?top)
+(retract ?bottom)
+(retract ?this)
+(retract ?action)
+(facts)
 )
+
+
+
 (defrule pickup_rock
 (action (do pickup))
 =>
@@ -77,18 +91,20 @@ else
 
 
 (deffunction next_direction (?left ?right ?top ?bottom)
+    
+    (?directions clear)
     (if(= (check_dir ?left) true) then
-        (store direction ?left.direction)
-     else (if(= (check_dir ?top) true) then
-        (store direction ?top.direction)
-     else (if(= (check_dir ?right) true) then
-        (store direction ?right.direction)
-     else (if(= (check_dir ?bottom) true) then
-        (store direction ?bottom.direction)
-     else 
-        (store direction ?came_from)
-     ))))
-	 (return nil)
+        (?directions add ?left.direction)
+     )   
+     (if(= (check_dir ?top) true) then
+        (?directions add ?top.direction))
+     (if(= (check_dir ?right) true) then
+        (?directions add ?right.direction))
+     (if(= (check_dir ?bottom) true) then
+        (?directions add ?bottom.direction))
+      (if (= (?directions isEmpty) true) then
+        (store direction ?came_from))
+      (return nil)
 )   
 
 (deffunction check_dir (?box)

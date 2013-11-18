@@ -264,16 +264,16 @@ public class SpaceshipAgent extends Agent {
                 map[i][j] = new GridField();
 		
                 if(i == 0){
-                    map[i][j].setTop(false);
+                    map[i][j].setLeft(false);
 		}
-                if(i == dimensions){
-                    map[i][j].setBottom(false);
+                if(i == dimensions-1){
+                    map[i][j].setRight(false);
 		}
 		if(j == 0){
-                    map[i][j].setLeft(false);
+                    map[i][j].setTop(false);
                 }
-                if(j == dimensions){
-                    map[i][j].setRight(false);
+                if(j == dimensions-1){
+                    map[i][j].setBottom(false);
                 }	
             }
         }
@@ -285,7 +285,7 @@ public class SpaceshipAgent extends Agent {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-                agent.addBehaviour(new SendLocationBehaviour(agent));
+                agent.addBehaviour(new SendLocationBehaviour(agent, map));
             
             }
         });

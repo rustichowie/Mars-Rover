@@ -42,22 +42,26 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
         //GridField left = map[myAgent.getPosX()];
         try {
             if(current.hasLeft()){
-                left = map[myAgent.getPosX()][myAgent.getPosY() - 1];
+                System.out.println("has left");
+                left = map[myAgent.getPosX() - 1][myAgent.getPosY()];
             } else{
                 left = new GridField(false, true, false, false, false, 0, 0, 0, true, 0, 0);
             }
             if(current.hasRight()){
-                right = map[myAgent.getPosX()][myAgent.getPosY() + 1];
+                System.out.println("has right");
+                right = map[myAgent.getPosX() + 1][myAgent.getPosY()];
             } else{
                 right = new GridField(true, false, false, false, false, 0, 0, 0, true, 0, 0);
             }
             if(current.hasBottom()){
-                 bottom = map[myAgent.getPosX() + 1][myAgent.getPosY()];
+                System.out.println("has bottom");
+                 bottom = map[myAgent.getPosX()][myAgent.getPosY() + 1];
             } else{
                 bottom = new GridField(false, false, true, false, false, 0, 0, 0, true, 0, 0);
             }
             if(current.hasTop()){
-                 top = map[myAgent.getPosX() - 1][myAgent.getPosY()];
+                 System.out.println("has top");
+                 top = map[myAgent.getPosX()][myAgent.getPosY() - 1];
             } else{
                 top = new GridField(false, false, false, true, false, 0, 0, 0, true, 0, 0);
             }
@@ -66,9 +70,25 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
         
         
         try {
-            util.search(left, right, top, bottom, current, myAgent);
+            util.search(left, right, top, bottom, current);
             
-        } catch (JessException ex) {
+            String direction = util.getNextDirection();
+            switch (direction) {
+                case "left":
+                    
+                    break;
+                case "right":
+                    break;
+                case "top":
+                    break;
+                case "bottom":
+                
+                    break;
+            }
+            
+            Thread.sleep(1000);
+            
+        } catch (JessException | InterruptedException ex) {
             Logger.getLogger(MarsRoverMovingBehaviour.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

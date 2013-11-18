@@ -10,6 +10,8 @@ import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ontologies.GridField;
@@ -26,6 +28,7 @@ public class SendLocationBehaviour extends OneShotBehaviour{
     public SendLocationBehaviour(Agent agent, GridField[][] map){
         myAgent = (SpaceshipAgent)agent;
         this.map = map;
+        
     }
     
     @Override
