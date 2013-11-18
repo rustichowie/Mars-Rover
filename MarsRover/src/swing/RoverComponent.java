@@ -47,6 +47,12 @@ public class RoverComponent extends JComponent {
         roverX -= 1;
         repaint();
     }
+    
+    public void moveRover(int x, int y){
+        roverX = x;
+        roverY = y;
+        repaint();
+    }
 
     @Override
     protected void paintComponent(Graphics g){

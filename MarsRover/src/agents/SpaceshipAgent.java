@@ -96,7 +96,6 @@ public class SpaceshipAgent extends Agent {
         mapFrame.pack();
         mapFrame.setVisible(true);
 
-
         printMap();
         printSpaceshipLocation();
 
@@ -169,6 +168,15 @@ public class SpaceshipAgent extends Agent {
         } catch(FIPAException fe){
             fe.printStackTrace();
         }
+    }
+    
+    public void updateGridField(GridField field){
+        map[field.getX()][field.getX()] = field;
+        gridComp.updateGridField(field, gridSize, dimensions);
+    }
+    
+    public void updateRover(int x, int y){
+        roverComp.moveRover(x, y);
     }
         
     public void printSpaceshipLocation(){
@@ -262,7 +270,9 @@ public class SpaceshipAgent extends Agent {
 	for(int i = 0; i < dimensions; i++){
             for(int j = 0; j < dimensions; j++){
                 map[i][j] = new GridField();
-		
+		map[i][j].setX(i);
+                map[i][j].setY(j);
+                
                 if(i == 0){
                     map[i][j].setLeft(false);
 		}
