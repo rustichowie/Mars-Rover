@@ -36,20 +36,21 @@ public class MarsRoverAgent extends Agent {
         try {
             //Registers the agent to DF
             DFService.register(this, getDFAgentDescription());
-            spaceshipAgent = getSpaceship();
         } catch (FIPAException fe) {
             fe.printStackTrace();
         }
         MessageTemplate tmpl = MessageTemplate.MatchPerformative(ACLMessage.CFP);
         addBehaviour(new CustomReceiverBehaviour(this, -1, tmpl) {
             public void handle(ACLMessage msg) {
-                System.out.println("R1:");
+                System.out.println("");
                 if (msg == null) {              
                     block();
                 } else {
                     String[] coordinates = msg.getContent().split("-");
                     posX = Integer.parseInt(coordinates[0]);
                     posY = Integer.parseInt(coordinates[1]);
+                    System.out.println("---< RoverAgent - " + myAgent.getLocalName() + " >---");
+                    System.out.println("Coordinates received ( " + posX + ", " + posY + " )");
                     addBehaviour(new MarsRoverBehaviour(myAgent));
                 }
             }
@@ -65,41 +66,16 @@ public class MarsRoverAgent extends Agent {
     private DFAgentDescription getDFAgentDescription() {
 
         ServiceDescription serviceDescription = new ServiceDescription();
+
         serviceDescription.setName(getLocalName());
+
         serviceDescription.setType("rover-agent");
 
         DFAgentDescription dfAgentDescription = new DFAgentDescription();
-        dfAgentDescription.setName(getAID());
-        dfAgentDescription.addServices(serviceDescription);
+        dfAgentDescription.setName( getAID() );
+        dfAgentDescription.addServices( serviceDescription );
 
         return dfAgentDescription;
-    }
-
-    /**
-     * Gets all carriers that is regstrered to the DFAgentDescription
-     */
-    private AID getSpaceship() {
-
-        DFAgentDescription dfAgentDescription = new DFAgentDescription();
-
-        ServiceDescription serviceDescription = new ServiceDescription();
-        serviceDescription.setType("spaceship-agent");
-
-        dfAgentDescription.addServices(serviceDescription);
-
-        try {
-            DFAgentDescription[] result = DFService.search(this, dfAgentDescription);
-            System.out.println();
-            System.out.println("----< Company found following carriers >----");
-            if (result.length != 0) {
-                return result[0].getName();
-            } else {
-                doDelete();
-                return null;
-            }
-        } catch (FIPAException e) {
-            return null;
-        }
     }
 
     public int getPosX() {
