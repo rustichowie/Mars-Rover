@@ -5,7 +5,6 @@
     (slot grain (type INTEGER))
     (slot came_from)
     (slot signal)
-    (slot is_empty)
     (slot is_spaceship)
 )
 
@@ -20,7 +19,7 @@
 
 
 (defrule search
-?this <- (gridbox (direction this) (signal ?this_signal) (obstacle ?this_obs) (rocks ?this_rocks) (grain ?this_grain) (came_from ?this_came_from)(is_empty ?this_is_empty) (is_spaceship ?this_is_spaceship))
+?this <- (gridbox (direction this) (signal ?this_signal) (obstacle ?this_obs) (rocks ?this_rocks) (grain ?this_grain) (came_from ?this_came_from) (is_spaceship ?this_is_spaceship))
 =>
 (if (< ?this.rocks 1) then
         (assert (action (do move)))
@@ -32,14 +31,15 @@
 )))
 
 (defrule move_rover
-?left <- (gridbox (direction left) (signal ?l_signal) (obstacle ?l_obs) (rocks ?l_rocks) (grain ?l_grain) (came_from ?l_came_from) (is_empty ?l_is_empty) (is_spaceship ?l_is_spaceship))
-?right <- (gridbox (direction right) (signal ?r_signal) (obstacle ?r_obs) (rocks ?r_rocks) (grain ?r_grain) (came_from ?r_came_from)(is_empty ?r_is_empty) (is_spaceship ?r_is_spaceship))
-?top <- (gridbox (direction top) (signal ?t_signal) (obstacle ?t_obs) (rocks ?t_rocks) (grain ?t_grain) (came_from ?t_came_from)(is_empty ?t_is_empty) (is_spaceship ?t_is_spaceship))
-?bottom <- (gridbox (direction bottom) (signal ?b_signal) (obstacle ?b_obs) (rocks ?b_rocks) (grain ?b_grain) (came_from ?b_came_from)(is_empty ?b_is_empty) (is_spaceship ?b_is_spaceship))
-?this <- (gridbox (direction this) (signal ?this_signal) (obstacle ?this_obs) (rocks ?this_rocks) (grain ?this_grain) (came_from ?this_came_from)(is_empty ?this_is_empty) (is_spaceship ?this_is_spaceship))
+?left <- (gridbox (direction left) (signal ?l_signal) (obstacle ?l_obs) (rocks ?l_rocks) (grain ?l_grain) (came_from ?l_came_from) (is_spaceship ?l_is_spaceship))
+?right <- (gridbox (direction right) (signal ?r_signal) (obstacle ?r_obs) (rocks ?r_rocks) (grain ?r_grain) (came_from ?r_came_from) (is_spaceship ?r_is_spaceship))
+?top <- (gridbox (direction top) (signal ?t_signal) (obstacle ?t_obs) (rocks ?t_rocks) (grain ?t_grain) (came_from ?t_came_from) (is_spaceship ?t_is_spaceship))
+?bottom <- (gridbox (direction bottom) (signal ?b_signal) (obstacle ?b_obs) (rocks ?b_rocks) (grain ?b_grain) (came_from ?b_came_from) (is_spaceship ?b_is_spaceship))
+?this <- (gridbox (direction this) (signal ?this_signal) (obstacle ?this_obs) (rocks ?this_rocks) (grain ?this_grain) (came_from ?this_came_from) (is_spaceship ?this_is_spaceship))
 
 (action (do move))
 =>
+(printout t "trying to move" crlf)
 (if (= ?rover.carrying false) then
 (next_direction ?left ?right ?top ?bottom)
 (printout t (fetch direction) crlf)
@@ -108,17 +108,3 @@ else
         (return true)
      else 
         (return false)))
-(assert (gridbox (direction this) (signal 5) (obstacle false) (rocks 0)
-(grain 0) (came_from false) (is_empty false) (is_spaceship false)))
-
-(bind ?rover (assert (rover (name Lasse) (carrying false)))) 
-(assert (gridbox (direction left) (signal 5) (obstacle true) (rocks 0)
-	(grain 0) (came_from false) (is_empty false) (is_spaceship false)))
-(assert (gridbox (direction right) (signal 6) (obstacle false) (rocks 0)
-	(grain 0) (came_from true) (is_empty false) (is_spaceship false)))
-(assert (gridbox (direction top) (signal 4) (obstacle false) (rocks 0)
-	(grain 0) (came_from false) (is_empty false) (is_spaceship false)))
-(assert (gridbox (direction bottom) (signal 7) (obstacle false) (rocks 5)
-	(grain 0) (came_from false) (is_empty false) (is_spaceship false)))
-(run)
-(clear)	

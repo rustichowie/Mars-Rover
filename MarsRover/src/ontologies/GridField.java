@@ -1,6 +1,7 @@
 package ontologies;
 
-public class GridField {
+import java.io.Serializable;
+public class GridField implements Serializable {
 
 	private boolean left;
 	private boolean right;
@@ -11,6 +12,9 @@ public class GridField {
 	private int grain;
 	private int signalStrength;
         private boolean obstacle;
+        private boolean came_from;
+        private int x, y;
+        
         
 	public GridField(){
 		this.left = true;
@@ -22,11 +26,10 @@ public class GridField {
 		this.grain = 0;
                 this.signalStrength = 0;
                 this.obstacle = false;
-                
+                this.came_from = false;
 	}
 	
-	public GridField(boolean left, boolean right, boolean top, boolean bottom, boolean spaceship, 
-                            boolean rocks, int numberOfRocks, int grain, int signalStrength, boolean obstacle){
+	public GridField(boolean left, boolean right, boolean top, boolean bottom, boolean spaceship, int numberOfRocks, int grain, int signalStrength, boolean obstacle, int x, int y){
 		this.left = left;
 		this.right = right;
 		this.top = top;
@@ -36,27 +39,30 @@ public class GridField {
 		this.grain = grain;
                 this.signalStrength = signalStrength;
                 this.obstacle = obstacle;
+                this.came_from = false;
+                this.x = x;
+                this.y = y;
 	}
 	
-	public boolean isLeft() {
+	public boolean hasLeft() {
 		return left;
 	}
 	public void setLeft(boolean left) {
 		this.left = left;
 	}
-	public boolean isRight() {
+	public boolean hasRight() {
 		return right;
 	}
 	public void setRight(boolean right) {
 		this.right = right;
 	}
-	public boolean isTop() {
+	public boolean hasTop() {
 		return top;
 	}
 	public void setTop(boolean top) {
 		this.top = top;
 	}
-	public boolean isBottom() {
+	public boolean hasBottom() {
 		return bottom;
 	}
 	public void setBottom(boolean bottom) {
@@ -95,6 +101,30 @@ public class GridField {
 
     public void setObstacle(boolean obstacle) {
         this.obstacle = obstacle;
+    }
+
+    public boolean isCame_from() {
+        return came_from;
+    }
+
+    public void setCame_from(boolean came_from) {
+        this.came_from = came_from;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 	
 }

@@ -5,7 +5,7 @@
 package agents;
 
 import behaviours.CustomReceiverBehaviour;
-import behaviours.MarsRoverBehaviour;
+import behaviours.MarsRoverMovingBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
@@ -16,6 +16,10 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import ontologies.GridField;
 
 /**
  *
@@ -25,8 +29,9 @@ public class MarsRoverAgent extends Agent {
 
     private int posX;
     private int posY;
-    private boolean hasRock;
+    private boolean hasRock = false;
     private AID spaceshipAgent;
+    private GridField[][] map;
 
     protected void setup() {
 
@@ -39,6 +44,7 @@ public class MarsRoverAgent extends Agent {
         } catch (FIPAException fe) {
             fe.printStackTrace();
         }
+        final MarsRoverAgent agent = this;
         MessageTemplate tmpl = MessageTemplate.MatchPerformative(ACLMessage.CFP);
         addBehaviour(new CustomReceiverBehaviour(this, -1, tmpl) {
             public void handle(ACLMessage msg) {
@@ -46,12 +52,32 @@ public class MarsRoverAgent extends Agent {
                 if (msg == null) {              
                     block();
                 } else {
-                    String[] coordinates = msg.getContent().split("-");
-                    posX = Integer.parseInt(coordinates[0]);
-                    posY = Integer.parseInt(coordinates[1]);
+                    //String[] coordinates = msg.getContent().split("-");
+                    //posX = Integer.parseInt(coordinates[0]);
+                    //posY = Integer.parseInt(coordinates[1]);
+                    try {
+                        map = (GridField[][]) msg.getContentObject();
+                        String s = "";
+                        for(int i = 0; i < map.length; i++){
+                            for (int j = 0; j < map.length; j++){
+                                 if(map[i][j].isSpaceship())
+                                 {
+                                     setPosX(i);
+                                     setPosY(j);
+                                 }
+                            }
+                            
+                            
+                        }
+                        System.out.println(s);
+                    } catch (UnreadableException ex) {
+                        Logger.getLogger(MarsRoverAgent.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                    
                     System.out.println("---< RoverAgent - " + myAgent.getLocalName() + " >---");
                     System.out.println("Coordinates received ( " + posX + ", " + posY + " )");
-                    addBehaviour(new MarsRoverBehaviour(myAgent));
+                    addBehaviour(new MarsRoverMovingBehaviour(agent, "jess/MarsRover.clp"));
                 }
             }
         });
@@ -101,4 +127,13 @@ public class MarsRoverAgent extends Agent {
     public void setHasRock(boolean hasRock) {
         this.hasRock = hasRock;
     }
+    
+    public void updateGridField(GridField gf){
+        map[gf.getX()][gf.getY()] = gf;
+    }
+    
+    public GridField[][] getMap(){
+        return map;
+    }
+    
 }

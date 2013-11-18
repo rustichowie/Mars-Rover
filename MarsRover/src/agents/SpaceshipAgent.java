@@ -95,7 +95,7 @@ public class SpaceshipAgent extends Agent {
                     @Override
                     public void actionPerformed(ActionEvent e) {
 
-                        agent.addBehaviour(new SendLocationBehaviour(agent));
+                        agent.addBehaviour(new SendLocationBehaviour(agent, map));
                     }
             });
 
@@ -192,10 +192,10 @@ public class SpaceshipAgent extends Agent {
                             int x = ((tx+1)*gridSize) + 100;
                             int y = ((ty+1)*gridSize) + 20;
                             int ss = (Math.abs(xSpaceshipGridPos - tx)+Math.abs(ySpaceshipGridPos - ty));
-
+  
                             gridComp.addGrid(x, y, gridSize, gridSize, Color.BLACK, "");
 
-                            map[ty][ty].setSignalStrength(ss);
+                            map[tx][ty].setSignalStrength(ss);
                     }
 
             }
