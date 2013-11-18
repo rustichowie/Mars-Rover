@@ -61,28 +61,38 @@ else
 
 
 (defrule pickup_rock
-(action (do pickup))
+?action <- (action (do pickup))
 =>
 (store pickup true)
-(printout t "move" crlf)
+(modify ?rover (carrying true))
 (assert (action (do move)))
+(retract ?action)
 )
 (defrule alert_rover
-(action (do alert))
+?action <- (action (do alert))
 =>
 (store alert true)
 (printout t "prickup" crlf)
 (assert (action (do pickup)))
+(retract ?action)
 )
-
+(defrule drop_rock
+?action  <- (action(do drop))
+=>
+(modify ?rover (carrying false))
+)
 
 (deffunction go_home(?left ?right ?top ?bottom ?this)
     (bind ?dir_ok false)
     (foreach ?dir (create$ ?left ?right ?top ?bottom)
+        (if (= ?dir.is_spaceship true) then
+            (assert (action (do drop)))
+            (break) 
+        else
         (if (and(= (check_dir ?dir) true)(= (better_signal ?this ?dir) true)) then
 			(store direction ?dir.direction)
 			(bind ?dir_ok true)
-			(break)))
+			(break))))
 			
 	(if (= ?dir_ok false) then
 		(store direction ?came_from))
@@ -120,7 +130,7 @@ else
 ))))
 
 (deffunction better_signal (?this ?next)
-    (if(< ?this.signal ?next_signal) then
+    (if(> ?this.signal ?next.signal) then
         (return true)
      else 
         (return false)))
