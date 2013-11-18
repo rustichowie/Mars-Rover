@@ -24,6 +24,7 @@ import jade.domain.FIPAException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import swing.RoverComponent;
 
 public class SpaceshipAgent extends Agent {
     
@@ -32,6 +33,7 @@ public class SpaceshipAgent extends Agent {
     private JFrame mapFrame;
     private GridComponent gridComp;
     private BoardInstructionsComponent boardComp;
+    private RoverComponent roverComp;
     private int gridSize;
     private int xSpaceship;
     private int ySpaceship;
@@ -41,72 +43,80 @@ public class SpaceshipAgent extends Agent {
     private List<AID> rovers;
 
     protected void setup(){
-            Object[] args = getArguments();
-            agent = this;
+        Object[] args = getArguments();
+        agent = this;
 
-            dimensions = 15;
-            gridSize = 25;
+        dimensions = 15;
+        gridSize = 25;
 
-            rovers = new ArrayList<>();
+        map = new GridField[dimensions][dimensions];
 
-            map = new GridField[dimensions][dimensions];
+        fillMap();
+        setSpaceshipLocation();
 
-            mapFrame = new JFrame();
-            mapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            mapFrame.setPreferredSize(new Dimension(800, 680));
+        rovers = new ArrayList<>();
 
-            gridComp = new GridComponent();
-            gridComp.setPreferredSize(new Dimension(200, 200));
+        mapFrame = new JFrame();
+        mapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mapFrame.setPreferredSize(new Dimension(800, 680));
 
-            boardComp = new BoardInstructionsComponent();
-            boardComp.setPreferredSize(new Dimension(90, 90));
+        gridComp = new GridComponent();
+        gridComp.setPreferredSize(new Dimension(200, 200));
+        gridComp.setBounds(0, 0, 600, 600);
 
-            JButton button = new JButton("Send Spaceship Location");
+        boardComp = new BoardInstructionsComponent();
+        boardComp.setPreferredSize(new Dimension(90, 90));
 
-            JPanel compPanel = new JPanel();
-            compPanel.setLayout(new BorderLayout());
-            compPanel.add(boardComp, BorderLayout.WEST);
-            compPanel.add(gridComp, BorderLayout.CENTER);
+        roverComp = new RoverComponent( xSpaceshipGridPos, ySpaceshipGridPos, "Lasse", gridSize);
+        roverComp.setPreferredSize(new Dimension( 200, 200 ));
+        roverComp.setBounds(0, 0, 600, 600);
 
-            JPanel buttonPanel = new JPanel();
-            buttonPanel.add(button);
+        JButton button = new JButton("Start Rovers");
+        JButton moveNorth = new JButton("Move North");
+        JButton moveEast = new JButton("Move East");
+        JButton moveSouth = new JButton("Move South");
+        JButton moveWest = new JButton("Move West");
 
-            mapFrame.getContentPane().add(compPanel, BorderLayout.CENTER);
-            mapFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        JPanel compPanel = new JPanel();
+        compPanel.setLayout(null);
+        compPanel.add( gridComp, BorderLayout.CENTER );
+        compPanel.add( roverComp, BorderLayout.CENTER );
 
-            mapFrame.pack();
-            mapFrame.setVisible(true);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(button);
+        buttonPanel.add(moveNorth);
+        buttonPanel.add(moveEast);
+        buttonPanel.add(moveSouth);
+        buttonPanel.add(moveWest);
 
-            fillMap();
+        mapFrame.getContentPane().add( compPanel, BorderLayout.CENTER );
+        mapFrame.getContentPane().add( boardComp, BorderLayout.WEST );
+        mapFrame.getContentPane().add( buttonPanel, BorderLayout.SOUTH );
 
-            setSpaceshipLocation();
+        mapFrame.pack();
+        mapFrame.setVisible(true);
 
-            printMap();
-            printSpaceshipLocation();
 
-            initObstacles();
-            initRocks();
+        printMap();
+        printSpaceshipLocation();
 
-            printObsticlesAndRocks();
+        initObstacles();
+        initRocks();
 
-            printBoard();
+        printObsticlesAndRocks();
 
-            button.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
+        printBoard();
 
-                        agent.addBehaviour(new SendLocationBehaviour(agent));
-                    }
-            });
+        initButtonClicks(button, moveNorth, moveEast, moveSouth, moveWest );
 
-            try{
-                DFService.register(agent, getDFAgentDescription());
-                updateAvailableRovers();
-            }catch(FIPAException fe){
-                fe.printStackTrace();
-            }
+        try{
+            DFService.register(agent, getDFAgentDescription());
+            updateAvailableRovers();
+        }catch(FIPAException fe){
+            fe.printStackTrace();
+        }
 
-            addBehaviour(new SpaceshipBehaviour(this));
+        addBehaviour(new SpaceshipBehaviour(this));
     }
 
     public List<AID> getRovers(){
@@ -268,4 +278,52 @@ public class SpaceshipAgent extends Agent {
             }
         }
     }    
+    
+    public void initButtonClicks(JButton button, JButton north, JButton east, JButton south, JButton west){
+        
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                agent.addBehaviour(new SendLocationBehaviour(agent));
+            
+            }
+        });
+        
+        north.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                roverComp.moveNorth();
+            
+            }
+        });
+        
+        east.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                roverComp.moveEast();
+            
+            }
+        });
+        
+        south.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                roverComp.moveSouth();
+            
+            }
+        });
+        
+        west.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                roverComp.moveWest();
+            
+            }
+        });
+    }
 }
