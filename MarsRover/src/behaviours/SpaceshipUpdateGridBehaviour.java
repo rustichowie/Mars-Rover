@@ -44,6 +44,7 @@ public class SpaceshipUpdateGridBehaviour extends CyclicBehaviour{
             sender = message.getSender();
             
             myAgent.updateGridField(field);
+            System.out.println("Update field");
             
             message = new ACLMessage( ACLMessage.INFORM );
             for(AID aid : myAgent.getRovers()){
@@ -64,7 +65,5 @@ public class SpaceshipUpdateGridBehaviour extends CyclicBehaviour{
         } else {
             block();
         }
-        
-        
     }
 }
