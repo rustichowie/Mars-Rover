@@ -83,11 +83,14 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
             updateRover.addReceiver(myAgent.getSpaceshipAgent());
             inform.addReceiver(myAgent.getSpaceshipAgent());
             GridField change = current;
-            
+            if(current.isSpaceship()){
+                myAgent.setAlerting(false);
+            }
             util.pickup(change, myAgent);
             util.drop(myAgent);
             util.dropGrain(change);
             util.pickUpGrain(change);
+            util.modifyRover("(modify ?rover (cluster_found "+ myAgent.isAlerting()+"))");
             System.out.println("Current: " + current.getX() + " | " + current.getY());
             System.out.println("Agent: " + myAgent.getPosX() + " | " + myAgent.getPosY());
             

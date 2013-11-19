@@ -13,7 +13,7 @@
 (deftemplate rover
     (slot name)
     (slot carrying)
-    (slot alerting)
+    (slot cluster_found)
 )
 
 (deftemplate action
@@ -24,7 +24,7 @@
 (defrule search
     ?this <- (gridbox (direction this) (signal ?this_signal) (obstacle ?this_obs) (rocks ?this_rocks) (grain ?this_grain) (came_from ?this_came_from) (is_spaceship ?this_is_spaceship))
 =>
-    (if (and(= ?rover.carrying false)(= ?rover.alerting false)) then
+    (if (and(= ?rover.carrying false)(= ?rover.cluster_found false)) then
         (if (< ?this.rocks 1) then
             (assert (action (do move)))
         else (if (= ?this.rocks 1) then
@@ -56,12 +56,12 @@
             (store cluster_found false))
     )
 
-    ; At spaceship AND Rover is alerting
-    (if (and(= ?this.is_spaceship true)(= ?rover.alerting true)) then
-        (modify ?rover (alerting false)))
+    ; At spaceship AND Rover is cluster_found
+    (if (and(= ?this.is_spaceship true)(= ?rover.cluster_found true)) then
+        (modify ?rover (cluster_found false)))
     
-    ; Rover NOT carrying AND Rover NOT alerting    OR    At spaceship
-    (if (or(and(= ?rover.carrying false)(= ?rover.alerting false))(= ?this.is_spaceship true)) then
+    ; Rover NOT carrying AND Rover NOT cluster_found    OR    At spaceship
+    (if (or(and(= ?rover.carrying false)(= ?rover.cluster_found false))(= ?this.is_spaceship true)) then
         (next_direction ?left ?right ?top ?bottom)
     else
         (printout t "going home" crlf)

@@ -96,6 +96,11 @@ public class JessUtil {
         
        
     }
+    
+    public void modifyRover(String message) throws JessException{
+        jess.executeCommand(message);
+    }
+    
     public void dropGrain(GridField gf) throws JessException{
         String grain = "";
         if(jess.fetch("cluster_found") != null)
