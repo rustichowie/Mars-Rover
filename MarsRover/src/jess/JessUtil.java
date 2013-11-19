@@ -89,8 +89,10 @@ public class JessUtil {
             grain = (String)jess.fetch("pickup_grain").externalAddressValue(null);
         else
             grain = "false";
-         if(grain.equals("true"))
+         if(grain.equals("true")){
             gf.setGrain(gf.getGrain() - 1);
+            jess.store("pickup_grain", "false");
+         }
         
        
     }

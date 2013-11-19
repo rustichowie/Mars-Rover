@@ -85,6 +85,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
             
             util.pickup(change, myAgent);
             util.drop(myAgent);
+            util.dropGrain(change);
             util.pickUpGrain(change);
             System.out.println("Current: " + current.getX() + " | " + current.getY());
             System.out.println("Agent: " + myAgent.getPosX() + " | " + myAgent.getPosY());

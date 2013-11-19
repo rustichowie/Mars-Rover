@@ -48,7 +48,7 @@
 =>
     (printout t "trying to move" crlf)
 
-    // Rover is carrying AND At spaceship
+    ; Rover is carrying AND At spaceship
     (if (and (= ?rover.carrying true) (= ?this.is_spaceship true)) then
         (assert (action (do drop)))
         (if (= (fetch cluster_found) true) then
@@ -56,11 +56,11 @@
             (store cluster_found false))
     )
 
-    // At spaceship AND Rover is alerting
+    ; At spaceship AND Rover is alerting
     (if (and(= ?this.is_spaceship true)(= ?rover.alerting true)) then
         (modify ?rover (alerting false)))
     
-    // Rover NOT carrying AND Rover NOT alerting    OR    At spaceship
+    ; Rover NOT carrying AND Rover NOT alerting    OR    At spaceship
     (if (or(and(= ?rover.carrying false)(= ?rover.alerting false))(= ?this.is_spaceship true)) then
         (next_direction ?left ?right ?top ?bottom)
     else
@@ -68,9 +68,11 @@
         (go_home ?left ?right ?top ?bottom ?this)
     )
 
-    // List of directions bigger than 0
+    ; List of directions bigger than 0
     (if (> (?directions size) 0) then
         (store direction (?directions get (?rand nextInt (?directions size))))
+        (printout t "store direction: "(fetch direction) crlf)
+        
     )
 
     (retract ?left)
