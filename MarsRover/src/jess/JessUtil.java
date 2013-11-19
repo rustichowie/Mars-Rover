@@ -26,7 +26,7 @@ public class JessUtil {
         jess = new Rete();
         try {
             jess.batch(jessFile);
-            String rover = "(bind ?rover (assert (rover (name "+agent.getLocalName()+") (carrying " + agent.hasRock()+"))))";
+            String rover = "(bind ?rover (assert (rover (name "+agent.getLocalName()+") (carrying " + agent.hasRock()+")(alerting "+agent.isAlerting()+") )))";
             this.makeassert(rover);
             jess.run();
         } catch (JessException ex) {
@@ -74,7 +74,7 @@ public class JessUtil {
     public void drop(MarsRoverAgent rover) throws JessException{
         String drop = "";
         if(jess.fetch("drop") != null)
-            drop = (String)jess.fetch("pickup").externalAddressValue(null);
+            drop = (String)jess.fetch("drop").externalAddressValue(null);
         else
             drop = "false";
         
@@ -82,6 +82,26 @@ public class JessUtil {
             jess.store("drop", "false");
             rover.setHasRock(false);
         }    
+    }
+    public void pickUpGrain(GridField gf) throws JessException{
+         String grain = "";
+        if(jess.fetch("pickup_grain") != null)
+            grain = (String)jess.fetch("pickup_grain").externalAddressValue(null);
+        else
+            grain = "false";
+         if(grain.equals("true"))
+            gf.setGrain(gf.getGrain() - 1);
+        
+       
+    }
+    public void dropGrain(GridField gf) throws JessException{
+        String grain = "";
+        if(jess.fetch("cluster_found") != null)
+            grain = (String)jess.fetch("cluster_found").externalAddressValue(null);
+        else
+            grain = "false";
+         if(grain.equals("true"))
+            gf.setGrain(2);
     }
     
     public boolean alert() throws JessException{
@@ -100,21 +120,21 @@ public class JessUtil {
         
         String left_assert = "(assert (gridbox (direction left) (signal "+left.getSignalStrength()+")"
                                     + " (obstacle "+left.isObstacle()+") (rocks "+left.getNumberOfRocks()+")"
-                                        + " (grain "+left.isGrain()+") (came_from "+left.isCame_from()+") (is_spaceship "+left.isSpaceship()+")))";
+                                        + " (grain "+left.getGrain()+") (came_from "+left.isCame_from()+") (is_spaceship "+left.isSpaceship()+")))";
         String right_assert = "(assert (gridbox (direction right) (signal "+right.getSignalStrength()+")"
                                     + " (obstacle "+right.isObstacle()+") (rocks "+right.getNumberOfRocks()+")"
-                                        + " (grain "+right.isGrain()+") (came_from "+right.isCame_from()+") (is_spaceship "+right.isSpaceship()+")))";
+                                        + " (grain "+right.getGrain()+") (came_from "+right.isCame_from()+") (is_spaceship "+right.isSpaceship()+")))";
         String top_assert = "(assert (gridbox (direction top) (signal "+top.getSignalStrength()+")"
                                     + " (obstacle "+top.isObstacle()+") (rocks "+top.getNumberOfRocks()+")"
-                                        + " (grain "+top.isGrain()+") (came_from "+top.isCame_from()+") (is_spaceship "+top.isSpaceship()+")))";
+                                        + " (grain "+top.getGrain()+") (came_from "+top.isCame_from()+") (is_spaceship "+top.isSpaceship()+")))";
 
         String bottom_assert = "(assert (gridbox (direction bottom) (signal "+bottom.getSignalStrength()+")"
                                     + " (obstacle "+bottom.isObstacle()+") (rocks "+bottom.getNumberOfRocks()+")"
-                                        + " (grain "+bottom.isGrain()+") (came_from "+bottom.isCame_from()+")"
+                                        + " (grain "+bottom.getGrain()+") (came_from "+bottom.isCame_from()+")"
                                             + " (is_spaceship "+bottom.isSpaceship()+")))";
          String current_assert = "(assert (gridbox (direction this) (signal "+current.getSignalStrength()+")"
                                     + " (obstacle "+current.isObstacle()+") (rocks "+current.getNumberOfRocks()+")"
-                                        + " (grain "+current.isGrain()+") (came_from "+current.isCame_from()+") (is_spaceship "+current.isSpaceship()+")))";
+                                        + " (grain "+current.getGrain()+") (came_from "+current.isCame_from()+") (is_spaceship "+current.isSpaceship()+")))";
         
         this.makeassert(left_assert);
         this.makeassert(top_assert);

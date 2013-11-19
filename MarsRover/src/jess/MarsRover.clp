@@ -13,6 +13,7 @@
 (deftemplate rover
     (slot name)
     (slot carrying)
+    (slot alerting)
 )
 
 (deftemplate action
@@ -23,14 +24,16 @@
 (defrule search
 ?this <- (gridbox (direction this) (signal ?this_signal) (obstacle ?this_obs) (rocks ?this_rocks) (grain ?this_grain) (came_from ?this_came_from) (is_spaceship ?this_is_spaceship))
 =>
+(if (and(= ?rover.carrying false)(= ?rover.alerting false)) then
 (if (< ?this.rocks 1) then
         (assert (action (do move)))
      else (if (= ?this.rocks 1) then
         (assert (action (do pickup)))
      else
-        (assert (action (do alert)))
+        (assert (action (do cluster_found)))
 		(printout t "alert" crlf)
-)))
+))
+else (assert(action(do move)))))
 
 (defrule move_rover
 ?left <- (gridbox (direction left) (signal ?l_signal) (obstacle ?l_obs) (rocks ?l_rocks) (grain ?l_grain) (came_from ?l_came_from) (is_spaceship ?l_is_spaceship))
@@ -44,18 +47,21 @@
 (printout t "trying to move" crlf)
 (if (and (= ?rover.carrying true) (= ?this.is_spaceship true)) then
  (assert (action (do drop)))
+ (if (= (fetch cluster_found) true) then
+    (store alert true)
+    (store cluster_found false))
 )
-(if (= ?rover.carrying false) then
+
+(if (and(= ?this.is_spaceship true)(= ?rover.alerting true)) then
+    (modify ?rover (alerting false)))
+
+(if (and(= ?rover.carrying false)(= ?rover.alerting false)) then
 (next_direction ?left ?right ?top ?bottom)
-
-(if (> (?directions size) 0) then
-(store direction (?directions get (?rand nextInt (?directions size)))))
-
 else
 (go_home ?left ?right ?top ?bottom ?this)
-(store direction (?directions get (?rand nextInt (?directions size))))
 )
-
+(if (> (?directions size) 0) then
+(store direction (?directions get (?rand nextInt (?directions size)))))
 (retract ?left)
 (retract ?right)
 (retract ?top)
@@ -75,10 +81,11 @@ else
 (assert (action (do move)))
 (retract ?action)
 )
-(defrule alert_rover
-?action <- (action (do alert))
+(defrule cluster
+?action <- (action (do cluster_found))
 =>
-(store alert true)
+
+(store cluster_found true)
 (printout t "prickup" crlf)
 (assert (action (do pickup)))
 (retract ?action)
@@ -108,8 +115,11 @@ else
 )		
 
 (deffunction next_direction (?left ?right ?top ?bottom)
-    
     (?directions clear)
+    (if (= (follow_grain ?left ?right ?top ?bottom) true) then
+        (assert(action (do pickup_grain)))
+        (return nil)
+    )
     (if(= (check_dir ?left) true) then
         (?directions add ?left.direction)
      )   
@@ -124,8 +134,18 @@ else
       (return nil)
 )   
 
+(deffunction follow_grain (?left ?right ?top ?bottom) 
+    (?directions clear)
+    (foreach ?dir (create$ ?left ?right ?top ?bottom)
+        (if(> ?dir.grain 0) then
+            (?directions add ?dir.direction)
+            (break)))
+)
+
 (deffunction check_dir (?box)
     (if (= ?box.obstacle true) then
+        (printout t ?box.direction crlf)
+        (printout t "is an obstacle" crlf)
         (return false)
     else (if (= ?box.came_from true) then
         (bind ?came_from ?box.came_from)
@@ -136,8 +156,17 @@ else
         (return true)
 ))))
 
-(deffunction better_signal (?this ?next)
-    (if(> ?this.signal ?next.signal) then
-        (return true)
-     else 
-        (return false)))
+
+(defrule drop_grain
+?action <- (action (do drop_grain))
+=>
+(store drop_grain true)
+(retract ?action)
+)
+
+(defrule pickup_grain
+?action <- (action (do pickup_grain))
+=>
+(store pickup_grain true)
+(retract ?action)
+)

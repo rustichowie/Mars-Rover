@@ -42,7 +42,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
         GridField right = null;
         GridField top = null;
         GridField bottom = null;
-        //GridField left = map[myAgent.getPosX()];
+        
         try {
             if(current.hasLeft()){
                 System.out.println("has left");
@@ -73,6 +73,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
         
         
         try {
+            
             util.search(left, right, top, bottom, current);
             ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
              ACLMessage updateRover = new ACLMessage(ACLMessage.INFORM);
@@ -84,6 +85,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
             
             util.pickup(change, myAgent);
             util.drop(myAgent);
+            util.pickUpGrain(change);
             System.out.println("Current: " + current.getX() + " | " + current.getY());
             System.out.println("Agent: " + myAgent.getPosX() + " | " + myAgent.getPosY());
             
@@ -133,7 +135,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
             inform.setContentObject(change);
             myAgent.send(updateRover);
             myAgent.send(inform);
-            Thread.sleep(2000);
+            Thread.sleep(500);
             
         } catch (JessException | InterruptedException ex) {
             Logger.getLogger(MarsRoverMovingBehaviour.class.getName()).log(Level.SEVERE, null, ex);

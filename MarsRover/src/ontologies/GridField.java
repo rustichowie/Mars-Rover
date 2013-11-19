@@ -80,7 +80,7 @@ public class GridField implements Serializable {
 	public void setNumberOfRocks(int numberOfRocks) {
 		this.numberOfRocks = numberOfRocks;
 	}
-	public int isGrain() {
+	public int getGrain() {
 		return grain;
 	}
 	public void setGrain(int grain) {

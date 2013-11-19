@@ -6,6 +6,7 @@ package agents;
 
 import behaviours.CustomReceiverBehaviour;
 import behaviours.MarsRoverMovingBehaviour;
+import behaviours.MarsRoverUpdateBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
@@ -32,6 +33,7 @@ public class MarsRoverAgent extends Agent {
     private boolean hasRock = false;
     private AID spaceshipAgent;
     private GridField[][] map;
+    private boolean alerting = false;
 
     protected void setup() {
 
@@ -79,6 +81,7 @@ public class MarsRoverAgent extends Agent {
                     System.out.println("---< RoverAgent - " + myAgent.getLocalName() + " >---");
                     System.out.println("Coordinates received ( " + posX + ", " + posY + " )");
                     addBehaviour(new MarsRoverMovingBehaviour(agent, "jess/MarsRover.clp"));
+                    addBehaviour(new MarsRoverUpdateBehaviour(agent));
                 }
             }
         });
@@ -133,6 +136,7 @@ public class MarsRoverAgent extends Agent {
         map[gf.getX()][gf.getY()] = gf;
     }
     
+    
     public GridField[][] getMap(){
         return map;
     }
@@ -143,6 +147,14 @@ public class MarsRoverAgent extends Agent {
 
     public void setSpaceshipAgent(AID spaceshipAgent) {
         this.spaceshipAgent = spaceshipAgent;
+    }
+
+    public boolean isAlerting() {
+        return alerting;
+    }
+
+    public void setAlerting(boolean alerting) {
+        this.alerting = alerting;
     }
     
 }
