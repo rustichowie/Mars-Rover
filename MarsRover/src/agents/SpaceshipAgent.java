@@ -116,7 +116,7 @@ public class SpaceshipAgent extends Agent {
         initObstacles();
         initRocks();
 
-        printObsticlesAndRocks();
+        printObstaclesAndRocks();
 
         printBoard();
 
@@ -198,10 +198,10 @@ public class SpaceshipAgent extends Agent {
     }
 
     public void printBoard(){
-        boardComp.addText("Spaceship", "Obsticles", "Rocks");
+        boardComp.addText("Spaceship", "obstacles", "Rocks");
     }
 
-    public void printObsticlesAndRocks(){
+    public void printObstaclesAndRocks(){
         for(int tx = 0; tx < dimensions; tx++){
             for(int ty = 0; ty < dimensions; ty++){
                 int i = ((tx+1)*gridSize) + 100;

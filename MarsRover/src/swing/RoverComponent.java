@@ -15,8 +15,6 @@ public class RoverComponent extends JComponent {
     private String roverName;
     private int gridSize;
 
-    
-
     public RoverComponent(int x, int y, String name, int gridSize) {
         this.roverX = x;
         this.roverY = y;
@@ -25,7 +23,10 @@ public class RoverComponent extends JComponent {
     }
     
     public RoverComponent(){
-        
+        this.roverX = 0;
+        this.roverY = 0;
+        this.roverName = "";
+        this.gridSize = 0;
     }
     
     public void moveNorth(){

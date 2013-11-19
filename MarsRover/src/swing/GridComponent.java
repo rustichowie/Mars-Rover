@@ -23,16 +23,16 @@ public class GridComponent extends JComponent {
 	}
         
         public void updateGridField(GridField field, int gridSize, int dim){
-            boolean done = false;
             int tx = ((field.getX()+1)*gridSize) + 100;
             int ty = ((field.getY()+1)*gridSize) + 20;
             for( Grid g : gridList  ){
                 if(g.getX() == tx && g.getY() == ty){
-                    if(field.getNumberOfRocks() == 0){
-                        g.setColor(Color.GRAY);
+                    if(!field.isSpaceship()){
+                        if(field.getNumberOfRocks() == 0){
+                            g.setColor(Color.GRAY);
+                        }
+                        g.setText(field.getNumberOfRocks()+"");
                     }
-                    g.setText(field.getNumberOfRocks()+"");
-                    System.out.println("Updated field: " + field.getX() + ", " + field.getY() );
                 }
             }
             repaint();

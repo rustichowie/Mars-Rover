@@ -8,26 +8,25 @@ import javax.swing.JComponent;
 
 public class BoardInstructionsComponent extends JComponent {
         
-        
     private String spaceship;
-    private String obsticles;
+    private String obstacles;
     private String rocks;
 
-    public BoardInstructionsComponent(String spaceship, String obsticles, String rocks) {
+    public BoardInstructionsComponent(String spaceship, String obstacles, String rocks) {
         this.spaceship = spaceship;
-        this.obsticles = obsticles;
+        this.obstacles = obstacles;
         this.rocks = rocks;
     }
     
     public BoardInstructionsComponent(){
         this.spaceship = "";
-        this.obsticles = "";
+        this.obstacles = "";
         this.rocks = "";
     }
 
-    public void addText(String spaceship, String obsticles, String rocks){
+    public void addText(String spaceship, String obstacles, String rocks){
         this.spaceship = spaceship;
-        this.obsticles = obsticles;
+        this.obstacles = obstacles;
         this.rocks = rocks;
         repaint();
     }
@@ -39,7 +38,7 @@ public class BoardInstructionsComponent extends JComponent {
         g.setColor(Color.BLUE);
         g.drawString(spaceship, 20, 30);
         g.setColor( new Color(229, 24, 24));
-        g.drawString(obsticles, 20, 50);
+        g.drawString(obstacles, 20, 50);
         g.setColor( new Color(52, 181, 95));
         g.drawString(rocks, 20, 70);
     }
@@ -53,11 +52,11 @@ public class BoardInstructionsComponent extends JComponent {
     }
 
     public String getObsticles() {
-        return obsticles;
+        return obstacles;
     }
 
-    public void setObsticles(String obsticles) {
-        this.obsticles = obsticles;
+    public void setObsticles(String obstacles) {
+        this.obstacles = obstacles;
     }
 
     public String getRocks() {

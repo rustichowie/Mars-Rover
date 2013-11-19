@@ -6,11 +6,6 @@ import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import ontologies.GridField;
 
 public class SpaceshipUpdateRoverBehaviour extends CyclicBehaviour{
         
