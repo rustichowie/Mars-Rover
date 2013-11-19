@@ -33,9 +33,12 @@ public class MarsRoverAlertBehaviour extends CyclicBehaviour {
         MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                 MessageTemplate.MatchConversationId("alert"));
         ACLMessage msg = agent.receive(mt);
+        
        if(msg != null){           
-              if(!agent.isAlerting())
+              if(!agent.isAlerting()){
                 agent.setAlerting(true);
+                System.out.println("ALLLLEEEEERTTRHBHBFHBDJBFUEBFUEBFKJBEJKBJKVBEJBVJEBVJBEVJEBJVEV");
+              }
        }
        else {
            block();

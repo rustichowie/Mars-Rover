@@ -26,7 +26,7 @@ public class JessUtil {
         jess = new Rete();
         try {
             jess.batch(jessFile);
-            String rover = "(bind ?rover (assert (rover (name "+agent.getLocalName()+") (carrying " + agent.hasRock()+")(alerting "+agent.isAlerting()+") )))";
+            String rover = "(bind ?rover (assert (rover (name "+agent.getLocalName()+") (carrying " + agent.hasRock()+")(cluster_found "+agent.isAlerting()+") )))";
             this.makeassert(rover);
             jess.run();
         } catch (JessException ex) {

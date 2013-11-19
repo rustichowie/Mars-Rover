@@ -30,7 +30,9 @@ public class MarsRoverUpdateBehaviour extends CyclicBehaviour {
     @Override
     public void action() {
         
-        MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+        MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+                MessageTemplate.MatchConversationId("update-grid"));
+        
         ACLMessage msg = agent.receive(mt);
        if(msg != null){
             try {

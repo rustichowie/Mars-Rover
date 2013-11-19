@@ -5,6 +5,7 @@
 package agents;
 
 import behaviours.CustomReceiverBehaviour;
+import behaviours.MarsRoverAlertBehaviour;
 import behaviours.MarsRoverMovingBehaviour;
 import behaviours.MarsRoverUpdateBehaviour;
 import jade.core.AID;
@@ -82,6 +83,7 @@ public class MarsRoverAgent extends Agent {
                     System.out.println("Coordinates received ( " + posX + ", " + posY + " )");
                     addBehaviour(new MarsRoverMovingBehaviour(agent, "jess/MarsRover.clp"));
                     addBehaviour(new MarsRoverUpdateBehaviour(agent));
+                    addBehaviour(new MarsRoverAlertBehaviour(agent));
                 }
             }
         });
