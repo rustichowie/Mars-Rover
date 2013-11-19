@@ -34,9 +34,14 @@ public class GridComponent extends JComponent {
                         }
                         g.setText(field.getNumberOfRocks()+"");
                         */
-                        g.setColor(Color.GRAY);
-                        g.setText(field.getGrain()+"");
                         
+                        if(field.getNumberOfRocks() > 0){
+                            g.setText(field.getNumberOfRocks()+"");
+                            g.setColor(new Color(52, 181, 95));
+                        } else {
+                            g.setColor(Color.GRAY);
+                            g.setText(field.getGrain()+"");
+                        }
                         
                         
                     }

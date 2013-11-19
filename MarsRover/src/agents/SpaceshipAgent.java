@@ -211,7 +211,7 @@ public class SpaceshipAgent extends Agent {
     }
 
     public void printBoard(){
-        boardComp.addText("Spaceship", "obstacles", "Rocks");
+        boardComp.addText("Spaceship", "Obstacles", "Rocks");
     }
 
     public void printObstaclesAndRocks(){
@@ -225,7 +225,6 @@ public class SpaceshipAgent extends Agent {
                 if(map[tx][ty].getNumberOfRocks() != 0){
                     gridComp.addGrid(i, j, gridSize, gridSize, new Color(52, 181, 95), "" + map[tx][ty].getNumberOfRocks());
                 }
-
             }
         }
     }
