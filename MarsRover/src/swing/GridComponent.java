@@ -28,10 +28,17 @@ public class GridComponent extends JComponent {
             for( Grid g : gridList  ){
                 if(g.getX() == tx && g.getY() == ty){
                     if(!field.isSpaceship()){
+                        /*
                         if(field.getNumberOfRocks() == 0){
                             g.setColor(Color.GRAY);
                         }
                         g.setText(field.getNumberOfRocks()+"");
+                        */
+                        g.setColor(Color.GRAY);
+                        g.setText(field.getGrain()+"");
+                        
+                        
+                        
                     }
                 }
             }
