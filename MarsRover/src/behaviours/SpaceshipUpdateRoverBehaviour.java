@@ -32,10 +32,19 @@ public class SpaceshipUpdateRoverBehaviour extends CyclicBehaviour{
             sender = message.getSender();
             String content = message.getContent();
             String[] coords = content.split("-");
+            
+            
             int x = Integer.parseInt(coords[0]);
             int y = Integer.parseInt(coords[1]);
             
             myAgent.updateRover(sender, x, y);
+            
+            if(coords.length > 2){
+                String alert = coords[2];
+                if(alert.equals("alert")){
+                    myAgent.sendAlert( sender );
+                }
+            }
             System.out.println("Update rover");
             
         } else {

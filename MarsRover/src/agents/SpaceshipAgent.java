@@ -22,6 +22,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -193,6 +194,18 @@ public class SpaceshipAgent extends Agent {
         }
     }
         
+    public void sendAlert(AID s){
+        ACLMessage alert = new ACLMessage(ACLMessage.INFORM);
+        for(AID aid: rovers){
+            if(!s.equals(aid)){
+                alert.addReceiver(aid);
+            }
+        }
+        alert.setConversationId("alert");
+        alert.setContent("No Content!");
+        send(alert);
+    }
+    
     public void printSpaceshipLocation(){
             gridComp.addGrid(xSpaceship, ySpaceship, gridSize, gridSize, Color.BLUE, "S");
     }
