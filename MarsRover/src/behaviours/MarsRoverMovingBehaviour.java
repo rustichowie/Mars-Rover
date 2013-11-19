@@ -69,6 +69,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
                 top = new GridField(false, false, false, true, false, 0, 0, 0, true, 0, 0);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Test: 1");
         }
         
         
@@ -76,7 +77,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
             
             util.search(left, right, top, bottom, current);
             ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
-             ACLMessage updateRover = new ACLMessage(ACLMessage.INFORM);
+            ACLMessage updateRover = new ACLMessage(ACLMessage.INFORM);
             inform.setConversationId("update-grid");
             updateRover.setConversationId("update-rover");
             updateRover.addReceiver(myAgent.getSpaceshipAgent());
