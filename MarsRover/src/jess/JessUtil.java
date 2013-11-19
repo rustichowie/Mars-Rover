@@ -52,8 +52,14 @@ public class JessUtil {
     }
     
     public String getNextDirection() throws JessException{
-        String dir = (String)jess.fetch("direction").externalAddressValue(null);
+        String dir = "";
+        if(jess.fetch("direction") != null)
+            dir = (String)jess.fetch("direction").externalAddressValue(null);
+        else
+            dir = "false";
+        
         return dir;
+        
     }
     
     public void pickup(GridField gf, MarsRoverAgent rover) throws JessException{
@@ -99,6 +105,7 @@ public class JessUtil {
     
     public void modifyRover(String message) throws JessException{
         jess.executeCommand(message);
+        jess.run();
     }
     
     public void dropGrain(GridField gf) throws JessException{

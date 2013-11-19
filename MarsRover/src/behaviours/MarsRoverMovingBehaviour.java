@@ -19,20 +19,21 @@ import ontologies.GridField;
  *
  * @author Haavard
  */
-public class MarsRoverMovingBehaviour extends CyclicBehaviour{
+public class MarsRoverMovingBehaviour extends CyclicBehaviour {
 
     private MarsRoverAgent myAgent;
     private JessUtil util;
     private GridField current;
-    
-    public MarsRoverMovingBehaviour(MarsRoverAgent a, String file){
+    private boolean error = false;
+
+    public MarsRoverMovingBehaviour(MarsRoverAgent a, String file) {
         myAgent = a;
         util = new JessUtil(myAgent, file);
-        
-        
-        
+
+
+
     }
-    
+
     @Override
     public void action() {
         GridField[][] map = myAgent.getMap();
@@ -42,39 +43,39 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
         GridField right = null;
         GridField top = null;
         GridField bottom = null;
-        
+
         try {
-            if(current.hasLeft()){
+            if (current.hasLeft()) {
                 System.out.println("has left");
                 left = map[myAgent.getPosX() - 1][myAgent.getPosY()];
-            } else{
+            } else {
                 left = new GridField(false, true, false, false, false, 0, 0, 0, true, 0, 0);
             }
-            if(current.hasRight()){
+            if (current.hasRight()) {
                 System.out.println("has right");
                 right = map[myAgent.getPosX() + 1][myAgent.getPosY()];
-            } else{
+            } else {
                 right = new GridField(true, false, false, false, false, 0, 0, 0, true, 0, 0);
             }
-            if(current.hasBottom()){
+            if (current.hasBottom()) {
                 System.out.println("has bottom");
-                 bottom = map[myAgent.getPosX()][myAgent.getPosY() + 1];
-            } else{
+                bottom = map[myAgent.getPosX()][myAgent.getPosY() + 1];
+            } else {
                 bottom = new GridField(false, false, true, false, false, 0, 0, 0, true, 0, 0);
             }
-            if(current.hasTop()){
-                 System.out.println("has top");
-                 top = map[myAgent.getPosX()][myAgent.getPosY() - 1];
-            } else{
+            if (current.hasTop()) {
+                System.out.println("has top");
+                top = map[myAgent.getPosX()][myAgent.getPosY() - 1];
+            } else {
                 top = new GridField(false, false, false, true, false, 0, 0, 0, true, 0, 0);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Test: 1");
         }
-        
-        
+
+
         try {
-            
+
             util.search(left, right, top, bottom, current);
             ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
             ACLMessage updateRover = new ACLMessage(ACLMessage.INFORM);
@@ -83,70 +84,80 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour{
             updateRover.addReceiver(myAgent.getSpaceshipAgent());
             inform.addReceiver(myAgent.getSpaceshipAgent());
             GridField change = current;
-            if(current.isSpaceship()){
+            if (current.isSpaceship()) {
                 myAgent.setAlerting(false);
+                
             }
+            System.out.println("JAVA: alerting - " + myAgent.isAlerting());
+            util.modifyRover("(modify ?rover (cluster_found " + myAgent.isAlerting() + "))");
             util.pickup(change, myAgent);
             util.drop(myAgent);
             util.dropGrain(change);
             util.pickUpGrain(change);
-            util.modifyRover("(modify ?rover (cluster_found "+ myAgent.isAlerting()+"))");
+            
             System.out.println("Current: " + current.getX() + " | " + current.getY());
-            System.out.println("Agent: " + myAgent.getPosX() + " | " + myAgent.getPosY());
             
-            
+
+
             String direction = util.getNextDirection();
-            
-            for(int x = 0; x < map.length; x++){
-                for(int y = 0; y < map.length; y++)
+
+            for (int x = 0; x < map.length; x++) {
+                for (int y = 0; y < map.length; y++) {
                     map[x][y].setCame_from(false);
+                }
             }
             map[current.getX()][current.getY()].setCame_from(true);
-            
+
             switch (direction) {
                 case "left":
                     System.out.println("Going: " + direction);
-                    
+
                     current = map[current.getX() - 1][current.getY()];
                     myAgent.setPosX(current.getX());
                     myAgent.setPosY(current.getY());
-                    
+                    error = false;
                     break;
                 case "right":
-                    System.out.println("Going: " + direction);
+                    
                     current = map[current.getX() + 1][current.getY()];
                     myAgent.setPosX(current.getX());
                     myAgent.setPosY(current.getY());
+                    error = false;
                     break;
                 case "top":
-                    System.out.println("Going: " + direction);
+                    
                     current = map[current.getX()][current.getY() - 1];
                     myAgent.setPosX(current.getX());
                     myAgent.setPosY(current.getY());
+                    error = false;
                     break;
                 case "bottom":
-                    System.out.println("Going: " + direction);
+                    
                     current = map[current.getX()][current.getY() + 1];
                     myAgent.setPosX(current.getX());
                     myAgent.setPosY(current.getY());
+                    error = false;
                     break;
+                case "false":
+                    error = true;
+                    System.out.println("Had a problem, trying again");
             }
-            if(util.alert()){
-                updateRover.setContent(current.getX()+"-"+current.getY()+"-alert");
+            if (!error) {
+                if (util.alert()) {
+                    updateRover.setContent(current.getX() + "-" + current.getY() + "-alert");
+                } else {
+                    updateRover.setContent(current.getX() + "-" + current.getY());
+                }
+                inform.setContentObject(change);
+                myAgent.send(updateRover);
+                myAgent.send(inform);
             }
-            else {
-                updateRover.setContent(current.getX()+"-"+current.getY());
-            }
-            inform.setContentObject(change);
-            myAgent.send(updateRover);
-            myAgent.send(inform);
-            Thread.sleep(500);
-            
+            Thread.sleep(1000);
+
         } catch (JessException | InterruptedException ex) {
             Logger.getLogger(MarsRoverMovingBehaviour.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(MarsRoverMovingBehaviour.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 }

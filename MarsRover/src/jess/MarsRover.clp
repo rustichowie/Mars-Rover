@@ -6,7 +6,7 @@
     (slot rocks (type INTEGER))
     (slot grain (type INTEGER))
     (slot came_from)
-    (slot signal)
+    (slot signal (type INTEGER))
     (slot is_spaceship)
 )
 
@@ -57,22 +57,23 @@
     )
 
     ; At spaceship AND Rover is cluster_found
-    (if (and(= ?this.is_spaceship true)(= ?rover.cluster_found true)) then
+    (if (= ?this.is_spaceship true) then
         (modify ?rover (cluster_found false)))
     
     ; Rover NOT carrying AND Rover NOT cluster_found    OR    At spaceship
-    (if (or(and(= ?rover.carrying false)(= ?rover.cluster_found false))(= ?this.is_spaceship true)) then
-        (next_direction ?left ?right ?top ?bottom)
+    (if (or(and(= ?rover.carrying false)(= ?rover.cluster_found false))(and(= ?this.is_spaceship true)(= ?rover.cluster_found true))) then
+        (next_direction ?left ?right ?top ?bottom ?this)
     else
         (printout t "going home" crlf)
         (go_home ?left ?right ?top ?bottom ?this)
     )
 
     ; List of directions bigger than 0
-    (if (> (?directions size) 0) then
+    (if (<= (?directions size) 0) then  
+        (go_back ?left ?right ?top ?bottom) 
+    else 
         (store direction (?directions get (?rand nextInt (?directions size))))
-        (printout t "store direction: "(fetch direction) crlf)
-        
+        (printout t "store direction: ") (printout t (fetch direction) crlf)
     )
 
     (retract ?left)
@@ -116,28 +117,29 @@
 
 (deffunction go_home(?left ?right ?top ?bottom ?this)
     (?directions clear)
-    (if(and(= (check_dir ?left) true)(< ?left.signal ?this.signal)) then
+    (if(and(= (check_dir ?left) true)(<= ?left.signal ?this.signal)) then
         (printout t "adding left" crlf)
         (?directions add ?left.direction)
      )   
-     (if(and (= (check_dir ?top) true)(< ?top.signal ?this.signal)) then
+     (if(and (= (check_dir ?top) true)(<= ?top.signal ?this.signal)) then
         (printout t "adding top" crlf)
         (?directions add ?top.direction))
-     (if(and (= (check_dir ?right) true)(< ?right.signal ?this.signal)) then
+     (if(and (= (check_dir ?right) true)(<= ?right.signal ?this.signal)) then
         (printout t "adding right" crlf)
         (?directions add ?right.direction))
-     (if(and (= (check_dir ?bottom) true)(< ?bottom.signal ?this.signal)) then
+     (if(and (= (check_dir ?bottom) true)(<= ?bottom.signal ?this.signal)) then
         (printout t "adding bottom" crlf)
         (?directions add ?bottom.direction))
       (if (= (?directions isEmpty) true) then
-        (next_direction ?left ?right ?top ?bottom))
+        (next_direction ?left ?right ?top ?bottom ?this))
       (return nil)
 )		
 
-(deffunction next_direction (?left ?right ?top ?bottom)
+(deffunction next_direction (?left ?right ?top ?bottom ?this)
     (?directions clear)
-    (if (= (follow_grain ?left ?right ?top ?bottom) true) then
+    (if (= (follow_grain ?left ?right ?top ?bottom ?this) true) then
         (assert(action (do pickup_grain)))
+        (printout t "Following grain" crlf)
         (return nil)
     )
     (if(= (check_dir ?left) true) then
@@ -159,12 +161,40 @@
       (return nil)
 )   
 
-(deffunction follow_grain (?left ?right ?top ?bottom) 
+(deffunction follow_grain (?left ?right ?top ?bottom ?this) 
     (?directions clear)
+
+    (if(and(> ?left.grain 0)(>= ?left.signal ?this.signal)) then
+        (?directions add ?left.direction)
+        (return true)
+     )   
+     (if(and(> ?top.grain 0)(>= ?top.signal ?this.signal)) then
+        (printout t "adding top" crlf)
+        (?directions add ?top.direction)
+        (return true)
+    )
+     (if(and(> ?right.grain 0)(>= ?right.signal ?this.signal)) then
+        (printout t "adding right" crlf)
+        (?directions add ?right.direction)
+        (return true)
+    )
+     (if(and(> ?bottom.grain 0)(>= ?bottom.signal ?this.signal)) then
+        (printout t "adding bottom" crlf)
+        (?directions add ?bottom.direction)
+        (return true)
+    )
+     (if (<= (?directions size) 0) then
+        (return false)
+     
+     )
+)
+
+(deffunction go_back (?left ?right ?top ?bottom)
     (foreach ?dir (create$ ?left ?right ?top ?bottom)
-        (if(> ?dir.grain 0) then
-            (?directions add ?dir.direction)
+        (if (= ?dir.came_from true) then
+            (store direction ?dir.direction)
             (break)))
+            
 )
 
 (deffunction check_dir (?box)

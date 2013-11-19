@@ -240,6 +240,7 @@ public class SpaceshipAgent extends Agent {
                             gridComp.addGrid(x, y, gridSize, gridSize, Color.BLACK, "");
 
                             map[tx][ty].setSignalStrength(ss);
+                            
                     }
 
             }

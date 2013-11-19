@@ -35,7 +35,7 @@ public class MarsRoverAlertBehaviour extends CyclicBehaviour {
         ACLMessage msg = agent.receive(mt);
         
        if(msg != null){           
-              if(!agent.isAlerting()){
+              if(!agent.isAlerting() && !agent.hasRock()){
                 agent.setAlerting(true);
                 System.out.println("ALLLLEEEEERTTRHBHBFHBDJBFUEBFUEBFKJBEJKBJKVBEJBVJEBVJBEVJEBJVEV");
               }
