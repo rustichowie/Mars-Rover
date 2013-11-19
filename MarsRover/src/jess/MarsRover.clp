@@ -55,9 +55,10 @@ else (assert(action(do move)))))
 (if (and(= ?this.is_spaceship true)(= ?rover.alerting true)) then
     (modify ?rover (alerting false)))
 
-(if (and(= ?rover.carrying false)(= ?rover.alerting false)) then
+(if (or(and(= ?rover.carrying false)(= ?rover.alerting false))(= ?this.is_spaceship true)) then
 (next_direction ?left ?right ?top ?bottom)
 else
+(printout t "going home" crlf)
 (go_home ?left ?right ?top ?bottom ?this)
 )
 (if (> (?directions size) 0) then
@@ -86,7 +87,7 @@ else
 =>
 
 (store cluster_found true)
-(printout t "prickup" crlf)
+(printout t "pickup" crlf)
 (assert (action (do pickup)))
 (retract ?action)
 )
@@ -101,13 +102,17 @@ else
 (deffunction go_home(?left ?right ?top ?bottom ?this)
     (?directions clear)
     (if(and(= (check_dir ?left) true)(< ?left.signal ?this.signal)) then
+        (printout t "adding left" crlf)
         (?directions add ?left.direction)
      )   
      (if(and (= (check_dir ?top) true)(< ?top.signal ?this.signal)) then
+        (printout t "adding top" crlf)
         (?directions add ?top.direction))
      (if(and (= (check_dir ?right) true)(< ?right.signal ?this.signal)) then
+        (printout t "adding right" crlf)
         (?directions add ?right.direction))
      (if(and (= (check_dir ?bottom) true)(< ?bottom.signal ?this.signal)) then
+        (printout t "adding bottom" crlf)
         (?directions add ?bottom.direction))
       (if (= (?directions isEmpty) true) then
         (next_direction ?left ?right ?top ?bottom))
@@ -121,15 +126,20 @@ else
         (return nil)
     )
     (if(= (check_dir ?left) true) then
+        (printout t "adding left" crlf)
         (?directions add ?left.direction)
      )   
      (if(= (check_dir ?top) true) then
+        (printout t "adding top" crlf)
         (?directions add ?top.direction))
      (if(= (check_dir ?right) true) then
+        (printout t "adding right" crlf)
         (?directions add ?right.direction))
      (if(= (check_dir ?bottom) true) then
+        (printout t "adding bottom" crlf)
         (?directions add ?bottom.direction))
       (if (= (?directions isEmpty) true) then
+        (printout t ?came_from crlf)
         (?directions add ?came_from))
       (return nil)
 )   
@@ -143,18 +153,18 @@ else
 )
 
 (deffunction check_dir (?box)
-    (if (= ?box.obstacle true) then
+     (if (= ?box.obstacle true) then
         (printout t ?box.direction crlf)
         (printout t "is an obstacle" crlf)
-        (return false)
-    else (if (= ?box.came_from true) then
+        (return false))
+     (if (= ?box.came_from true) then
         (bind ?came_from ?box.came_from)
-        (return false)
-    else (if (and (= ?box.is_spaceship true)(= ?rover.carrying false)) then
-        (return false)
-    else 
+        (return false))
+     (if (and (= ?box.is_spaceship true)(= ?rover.carrying false)) then
+        (return false))
+     
         (return true)
-))))
+)
 
 
 (defrule drop_grain
