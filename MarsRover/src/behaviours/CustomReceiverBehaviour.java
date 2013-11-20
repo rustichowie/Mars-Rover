@@ -10,7 +10,9 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 /**
- *
+ * This is a custom receiver behaviour, after tips from the jade webpage,
+ * we created our own receiver, since the one allready in jade is not that good.
+ * It closes after it receives a message
  * @author Haavard
  */
 public class CustomReceiverBehaviour extends SimpleBehaviour {

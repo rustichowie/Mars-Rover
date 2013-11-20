@@ -3,20 +3,25 @@ package ontologies;
 import java.io.Serializable;
 public class GridField implements Serializable {
 
+        //Checks if there are fields next to it in all four directions
 	private boolean left;
 	private boolean right;
 	private boolean top;
 	private boolean bottom;
-	private boolean spaceship;
-	private int numberOfRocks;
-	private int grain;
-        private boolean cluster_found;
-	private int signalStrength;
-        private boolean obstacle;
-        private boolean came_from;
-        private int x, y;
         
         
+	private boolean spaceship;      //is this the spaceship
+	private int numberOfRocks;      //number of rocks on the field
+	private int grain;              //grain on the field
+        private boolean cluster_found;  //if this is a cluster, is it discovered
+	private int signalStrength;     //Signalstrength, it is 0 at spaceship and gets bigger the further away(so that rover can go home)
+        private boolean obstacle;       //is this an obstacle
+        private boolean came_from;      //Did the rover just visit this field?
+        private int x, y;               //posistion on map
+        
+        /**
+         * empty constructor
+         */
 	public GridField(){
 		this.left = true;
 		this.right = true;
@@ -31,6 +36,21 @@ public class GridField implements Serializable {
                 this.cluster_found = false;
 	}
 	
+        /**
+         * full contructor
+         * @param left
+         * @param right
+         * @param top
+         * @param bottom
+         * @param spaceship
+         * @param numberOfRocks
+         * @param grain
+         * @param signalStrength
+         * @param obstacle
+         * @param x
+         * @param y
+         * @param cluster_found 
+         */
 	public GridField(boolean left, boolean right, boolean top, boolean bottom, boolean spaceship,
                             int numberOfRocks, int grain, int signalStrength, boolean obstacle, int x, int y, boolean cluster_found){
 		this.left = left;
@@ -48,6 +68,9 @@ public class GridField implements Serializable {
                 this.cluster_found = cluster_found;
 	}
 	
+        /**
+         * Getter and Setter methods.
+         */
 	public boolean hasLeft() {
 		return left;
 	}

@@ -30,20 +30,26 @@ import swing.RoverComponent;
 
 public class SpaceshipAgent extends Agent {
     
-    private GridField[][] map;
-    private int dimensions;
-    private JFrame mapFrame;
-    private GridComponent gridComp;
-    private BoardInstructionsComponent boardComp;
-    private List<RoverComponent> roverComp;
-    private int gridSize;
-    private int xSpaceship;
+    private GridField[][] map;                      //Gridmap
+    private int dimensions;                         //Size of map
+    private JFrame mapFrame;                        //map frame
+    private GridComponent gridComp;                 //map component
+    private BoardInstructionsComponent boardComp;   //text update component
+    private List<RoverComponent> roverComp;         //list of rover components
+    private int gridSize;                           //size of 1 grid
+    
+    //Spaceship position, in map and on screen
+    private int xSpaceship;                     
     private int ySpaceship;
     private int xSpaceshipGridPos;
     private int ySpaceshipGridPos;
-    private Agent agent;
-    private List<AID> rovers;
+    
+    private Agent agent;                            //current agent
+    private List<AID> rovers;                       //list of rovers
 
+    /**
+     * Draws everything and sets up the map.
+     */
     protected void setup(){
         Object[] args = getArguments();
         agent = this;
@@ -121,6 +127,9 @@ public class SpaceshipAgent extends Agent {
         addBehaviour(new SpaceshipUpdateRoverBehaviour(this));
     }
 
+    /**
+     * Getter and Setter methods for some class variables.
+     */
     public List<AID> getRovers(){
         return rovers;
     }
@@ -133,6 +142,10 @@ public class SpaceshipAgent extends Agent {
         return ySpaceshipGridPos;
     }
 
+    /**
+     * Registrers the service description
+     * @return 
+     */
     public DFAgentDescription getDFAgentDescription(){
 
         ServiceDescription serviceDescription = new ServiceDescription();
@@ -146,6 +159,9 @@ public class SpaceshipAgent extends Agent {
         return dfAgentDescription;
     }
 
+    /**
+     * Finds all rovers from the Directory facilitator
+     */
     private void updateAvailableRovers(){
         DFAgentDescription dfAgentDescription = new DFAgentDescription();
 
@@ -173,11 +189,21 @@ public class SpaceshipAgent extends Agent {
         }
     }
     
+    /**
+     * Updates the map with changes from the rovers
+     * @param field 
+     */
     public void updateGridField(GridField field){
         map[field.getX()][field.getX()] = field;
         gridComp.updateGridField(field, gridSize, dimensions);
     }
     
+    /**
+     * Updates rover position on map
+     * @param aid
+     * @param x
+     * @param y 
+     */
     public void updateRover(AID aid, int x, int y){
         for( RoverComponent rc: roverComp){
             if(rc.getRoverName().equals(aid.getLocalName())){
@@ -185,7 +211,11 @@ public class SpaceshipAgent extends Agent {
             }
         }
     }
-        
+    
+    /**
+     * If a rover finds a cluster of rocks, alert the other rover
+     * @param s 
+     */
     public void sendAlert(AID s){
         ACLMessage alert = new ACLMessage(ACLMessage.INFORM);
         for(AID aid: rovers){
@@ -198,14 +228,23 @@ public class SpaceshipAgent extends Agent {
         send(alert);
     }
     
+    /**
+     * prints out the spaceship on the map
+     */
     public void printSpaceshipLocation(){
             gridComp.addGrid(xSpaceship, ySpaceship, gridSize, gridSize, Color.BLUE, "S");
     }
 
+    /**
+     * Prints out the board in the top left corner
+     */
     public void printBoard(){
         boardComp.addText("Spaceship", "Obstacles", "Rocks");
     }
 
+    /**
+     * Prints all obstacles and rocks on the map
+     */
     public void printObstaclesAndRocks(){
         for(int tx = 0; tx < dimensions; tx++){
             for(int ty = 0; ty < dimensions; ty++){
@@ -220,7 +259,10 @@ public class SpaceshipAgent extends Agent {
             }
         }
     }
-			
+    
+    /**
+     * Prints the map itself
+     */
     public void printMap(){
 
             for(int tx = 0; tx < dimensions; tx++){
@@ -238,6 +280,9 @@ public class SpaceshipAgent extends Agent {
             }
     }
 	
+    /**
+     * Initializes the obstacles
+     */
     public void initObstacles(){
         Random rand = new Random();
         int noOfObstacles = (rand.nextInt(4) + 3);
@@ -255,6 +300,9 @@ public class SpaceshipAgent extends Agent {
 
     }
         
+    /**
+     * Initializes the rocks
+     */
     public void initRocks(){
         Random rand = new Random();
         int count = 0;
@@ -277,6 +325,9 @@ public class SpaceshipAgent extends Agent {
         }
     }
         
+    /**
+     * Sets the spaceship location
+     */
     public void setSpaceshipLocation(){
         xSpaceshipGridPos = (int) (Math.random() * dimensions);
         ySpaceshipGridPos = (int) (Math.random() * dimensions);
@@ -285,6 +336,9 @@ public class SpaceshipAgent extends Agent {
         ySpaceship = ((ySpaceshipGridPos+1)*gridSize) + 20;
     }
 	
+    /**
+     * makes sure that the rover won't go outside the boundaries.
+     */
     public void fillMap(){
 	for(int i = 0; i < dimensions; i++){
             for(int j = 0; j < dimensions; j++){
@@ -307,7 +361,10 @@ public class SpaceshipAgent extends Agent {
             }
         }
     }    
-    
+    /**
+     * Button listener
+     * @param button 
+     */
     public void initButtonClicks(JButton button){
         
         button.addActionListener(new ActionListener() {

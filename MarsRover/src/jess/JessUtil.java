@@ -1,8 +1,6 @@
 package jess;
 
 import agents.MarsRoverAgent;
-import agents.SpaceshipAgent;
-import jade.core.Agent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ontologies.GridField;
@@ -16,9 +14,7 @@ public class JessUtil {
     private MarsRoverAgent myAgent; // holds the pointer to this agent
 
     /**
-     * Creates a
-     * <code>BasicJessBehaviour</code> instance
-     *
+     * Starts the jess file
      * @param agent the agent that adds the behaviour
      * @param jessFile the name of the Jess file to be executed
      */
@@ -37,9 +33,6 @@ public class JessUtil {
         
     }
 
-    private boolean isEmpty(String string) {
-        return (string == null) || string.equals("");
-    }
 
     /**
      * makeasserts a fact representing an ACLMessage in Jess. It is called after
@@ -53,6 +46,11 @@ public class JessUtil {
         }
     }
     
+    /**
+     * Makes the next direction available to the rover, so that it can move.
+     * @return
+     * @throws JessException 
+     */
     public String getNextDirection() throws JessException{
         String dir = "";
         if(jess.fetch("direction") != null)
@@ -63,7 +61,12 @@ public class JessUtil {
         return dir;
         
     }
-    
+    /**
+     * Checks if the rover should pickup a rock or not
+     * @param gf
+     * @param rover
+     * @throws JessException 
+     */
     public void pickup(GridField gf, MarsRoverAgent rover) throws JessException{
         
         String pickup = "";
@@ -88,6 +91,11 @@ public class JessUtil {
         }    
     }
     
+    /**
+     * if rover is at spaceship it should drop the rocks it is carrying
+     * @param rover
+     * @throws JessException 
+     */
     public void drop(MarsRoverAgent rover) throws JessException{
         String drop = "";
         if(jess.fetch("drop") != null)
@@ -100,6 +108,12 @@ public class JessUtil {
             rover.setHasRock(false);
         }    
     }
+    
+    /**
+     * Checks if the rover should pick up grain in its path
+     * @param gf
+     * @throws JessException 
+     */
     public void pickUpGrain(GridField gf) throws JessException{
          String grain = "";
         if(jess.fetch("pickup_grain") != null)
@@ -116,11 +130,21 @@ public class JessUtil {
        
     }
     
+    /**
+     * Methods to update the rover in jess
+     * @param message
+     * @throws JessException 
+     */
     public void modifyRover(String message) throws JessException{
         jess.executeCommand(message);
         jess.run();
     }
     
+    /**
+     * Checks if the rover should drop grain
+     * @param gf
+     * @throws JessException 
+     */
     public void dropGrain(GridField gf) throws JessException{
         String grain = "";
         
@@ -135,7 +159,11 @@ public class JessUtil {
         }
         
     }
-    
+    /**
+     * Checks if the rover found a cluster, if so: alert!
+     * @return
+     * @throws JessException 
+     */
     public boolean alert() throws JessException{
         String alert = "";
         if(jess.fetch("alert") != null)
@@ -149,6 +177,16 @@ public class JessUtil {
         else
             return false;
     }
+    
+    /**
+     * Main method, that makes the rover moves. it just asserts 5 gridfields.
+     * @param left
+     * @param right
+     * @param top
+     * @param bottom
+     * @param current
+     * @throws JessException 
+     */
     public void search(GridField left, GridField right, GridField top, GridField bottom, GridField current) throws JessException{
         
         String left_assert = "(assert (gridbox (direction left) (signal "+left.getSignalStrength()+")"
@@ -177,82 +215,5 @@ public class JessUtil {
         jess.run();
     }
     
-    /**
-     * Remove the first and the last character of the string (if it is a
-     * quotation mark) and convert all backslash quote in quote It is used to
-     * convert a Jess content into an ACL message content.
-     */
-    private String unquote(String str) {
-        String t1 = str.trim();
-
-        if (t1.startsWith("\"")) {
-            t1 = t1.substring(1);
-        }
-
-        if (t1.endsWith("\"")) {
-            t1 = t1.substring(0, t1.length() - 1);
-        }
-
-        int len = t1.length();
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        char[] val = new char[len];
-        t1.getChars(0, len, val, 0); // put chars into val
-
-        char[] buf = new char[len];
-
-        boolean maybe = false;
-
-        while (i < len) {
-            if (maybe) {
-                if (val[i] == '\"') {
-                    j--;
-                }
-
-                buf[j] = val[i];
-                maybe = false;
-                i++;
-                j++;
-            } else {
-                if (val[i] == '\\') {
-                    maybe = true;
-                }
-
-                buf[j] = val[i];
-                i++;
-                j++;
-            }
-        }
-
-        return new String(buf, 0, j);
-    }
-
-    /**
-     * @return the String representing the facts (even more than one fact is
-     * allowed, but this method just returns one fact) to be asserted in Jess as
-     * a consequence of the receipt of the passed ACL Message. The messate
-     * content is quoted before asserting the Jess Fact. It is unquoted by the
-     * JessFact2ACL function.
-     */
-    public String assertString(String string) {
-        String fact;
-
-        if (string == null) {
-            return "";
-        }
-
-        fact = "(assert " + string + ")";
-
-        return fact;
-    }
-
-    public void printFacts() {
-        try {
-            jess.executeCommand("(facts)");
-        } catch (JessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    
 }

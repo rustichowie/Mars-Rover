@@ -10,14 +10,12 @@ import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ontologies.GridField;
 
 /**
- *
+ * Starts the simulation by sending the map to all rovers.
  * @author Lasse
  */
 public class SendLocationBehaviour extends OneShotBehaviour{
@@ -34,7 +32,7 @@ public class SendLocationBehaviour extends OneShotBehaviour{
     @Override
     public void action() {
         ACLMessage message = new ACLMessage(ACLMessage.CFP);
-        //.setContent(myAgent.getxSpaceshipGridPos() + "-" + myAgent.getySpaceshipGridPos());
+        
         try {
             message.setContentObject(map);
         } catch (IOException ex) {

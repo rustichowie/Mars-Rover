@@ -5,7 +5,6 @@
 package behaviours;
 
 import agents.MarsRoverAgent;
-import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import java.io.IOException;
@@ -16,26 +15,31 @@ import jess.JessUtil;
 import ontologies.GridField;
 
 /**
- *
+ * The rovers main behaviour. It updates the map, it looks for events that happends
+ * and moves the rover around
  * @author Haavard
  */
 public class MarsRoverMovingBehaviour extends CyclicBehaviour {
 
-    private MarsRoverAgent myAgent;
-    private JessUtil util;
-    private GridField current;
-    private boolean error = false;
+    private MarsRoverAgent myAgent; //agent instance
+    private JessUtil util;          //jess utility class
+    private GridField current;      //current gridfield
+    private boolean error = false;  //error bool
 
+    /**
+     * Contructor that takes in the agent and a clp file
+     * @param a
+     * @param file 
+     */
     public MarsRoverMovingBehaviour(MarsRoverAgent a, String file) {
         myAgent = a;
         util = new JessUtil(myAgent, file);
-
-
-
     }
 
     @Override
     public void action() {
+        
+        //gets the map from the agent
         GridField[][] map = myAgent.getMap();
         current = map[myAgent.getPosX()][myAgent.getPosY()];
         System.out.println("Current: " + current.getX() + " | " + current.getY());
@@ -44,6 +48,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
         GridField top = null;
         GridField bottom = null;
 
+        //Sets the different gridfields it needs to choose a path
         try {
             if (current.hasLeft()) {
                 left = map[myAgent.getPosX() - 1][myAgent.getPosY()];
@@ -66,13 +71,15 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
                 top = new GridField(false, false, false, true, false, 0, 0, 0, true, 0, 0, false);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Test: 1");
+            
         }
 
 
         try {
-
+            //searches for a new direction to go
             util.search(left, right, top, bottom, current);
+            
+            //Gets ready 2 messages to send to spaceship
             ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
             ACLMessage updateRover = new ACLMessage(ACLMessage.INFORM);
             inform.setConversationId("update-grid");
@@ -84,6 +91,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
                 myAgent.setAlerting(false);
                 
             }
+            //Runs some methods to check if something has changed on the map, or with the rover
             util.modifyRover("(modify ?rover (cluster_found " + myAgent.isAlerting() + "))");
             util.pickup(change, myAgent);
             util.drop(myAgent);
@@ -93,7 +101,8 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
             System.out.println("Grain on gridfield: " + change.getX()+"|"+change.getY()+ " :" + change.getGrain());
             
             String direction = util.getNextDirection();
-
+            
+            //Resets the came_from variable
             for (int x = 0; x < map.length; x++) {
                 for (int y = 0; y < map.length; y++) {
                     map[x][y].setCame_from(false);
@@ -101,6 +110,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
             }
             map[current.getX()][current.getY()].setCame_from(true);
 
+            //Checks what direction JESS has chosen
             switch (direction) {
                 case "left":
 
@@ -134,6 +144,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
                     error = true;
                     System.out.println("Had a problem, trying again");
             }
+            //If no errors, send updates to the spaceship, and update local map
             if (!error) {
                 if (util.alert()) {
                     updateRover.setContent(current.getX() + "-" + current.getY() + "-alert");
@@ -145,6 +156,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
                 myAgent.send(updateRover);
                 myAgent.send(inform);
             }
+            //sleeps so that we can simulate movement 
             Thread.sleep(1000);
 
         } catch (JessException | InterruptedException ex) {

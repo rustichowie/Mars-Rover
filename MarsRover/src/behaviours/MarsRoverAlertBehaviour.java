@@ -8,13 +8,11 @@ import agents.MarsRoverAgent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import ontologies.GridField;
+
 
 /**
- *
+ * A cyclic behaviour that waits for a alert message.
+ * If another rover finds a cluster, it sends an alert which this one receives.
  * @author Haavard
  */
 public class MarsRoverAlertBehaviour extends CyclicBehaviour {
@@ -37,7 +35,7 @@ public class MarsRoverAlertBehaviour extends CyclicBehaviour {
        if(msg != null){           
               if(!agent.isAlerting() && !agent.hasRock()){
                 agent.setAlerting(true);
-                System.out.println("ALLLLEEEEERTTRHBHBFHBDJBFUEBFUEBFKJBEJKBJKVBEJBVJEBVJBEVJEBJVEV");
+               
               }
        }
        else {

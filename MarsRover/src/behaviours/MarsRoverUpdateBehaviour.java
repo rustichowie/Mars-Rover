@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import ontologies.GridField;
 
 /**
- *
+ * Behaviour that receives updates from the spaceship and updates local variables.
  * @author Haavard
  */
 public class MarsRoverUpdateBehaviour extends CyclicBehaviour {

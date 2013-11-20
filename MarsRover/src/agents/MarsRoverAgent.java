@@ -10,8 +10,6 @@ import behaviours.MarsRoverMovingBehaviour;
 import behaviours.MarsRoverUpdateBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.OneShotBehaviour;
-import jade.core.behaviours.ReceiverBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -25,21 +23,31 @@ import ontologies.GridField;
 
 /**
  *
- * @author Lassei
+ * A Mars rover, it moves around on a gridmap and tries to find
+ * rock samples.
  */
 public class MarsRoverAgent extends Agent {
 
-    private int posX;
+    //Current position in grid
+    private int posX;                   
     private int posY;
+    
+    //is rover carrying a rock
     private boolean hasRock = false;
+    
+    //Instance of the spaceship
     private AID spaceshipAgent;
+    
+    //gridmap
     private GridField[][] map;
+    
+    //has rover been alerted of a cluster somewhere
     private boolean alerting = false;
 
+    /**
+     * Setup method, it waits until the spaceship gives the go signal before starting it's search.
+     */
     protected void setup() {
-
-
-
 
         try {
             //Registers the agent to DF
@@ -56,10 +64,9 @@ public class MarsRoverAgent extends Agent {
                     block();
                 } else {
                     setSpaceshipAgent(msg.getSender());
-                    //String[] coordinates = msg.getContent().split("-");
-                    //posX = Integer.parseInt(coordinates[0]);
-                    //posY = Integer.parseInt(coordinates[1]);
+                    
                     try {
+                        //Gets the gridmap and sets current location.
                         map = (GridField[][]) msg.getContentObject();
                         String s = "";
                         for(int i = 0; i < map.length; i++){
@@ -109,7 +116,16 @@ public class MarsRoverAgent extends Agent {
 
         return dfAgentDescription;
     }
-
+    /**
+     * method that updates the map if a field is changed. 
+     */
+    public void updateGridField(GridField gf){
+        map[gf.getX()][gf.getY()] = gf;
+    }
+    
+    /**
+     * Getter and Setter methods for all class variables. 
+     */
     public int getPosX() {
         return posX;
     }
@@ -134,9 +150,7 @@ public class MarsRoverAgent extends Agent {
         this.hasRock = hasRock;
     }
     
-    public void updateGridField(GridField gf){
-        map[gf.getX()][gf.getY()] = gf;
-    }
+    
     
     
     public GridField[][] getMap(){

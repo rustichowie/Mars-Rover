@@ -12,6 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import ontologies.GridField;
 
+
+/**
+ * Receives updates from rovers, stores them and sends the update to the other rover
+ * @author Haavard
+ */
 public class SpaceshipUpdateGridBehaviour extends CyclicBehaviour{
         
     private final SpaceshipAgent myAgent;

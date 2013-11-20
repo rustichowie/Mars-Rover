@@ -7,6 +7,10 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+/**
+ * Receives the position of the rovers
+ * @author Haavard
+ */
 public class SpaceshipUpdateRoverBehaviour extends CyclicBehaviour{
         
     private SpaceshipAgent myAgent;
