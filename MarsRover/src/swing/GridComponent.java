@@ -40,7 +40,7 @@ public class GridComponent extends JComponent {
                             g.setColor(new Color(52, 181, 95));
                         } else {
                             g.setColor(Color.GRAY);
-                            g.setText(field.getGrain()+"");
+                            g.setText("");
                         }
                         
                         

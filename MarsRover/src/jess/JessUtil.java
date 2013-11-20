@@ -110,7 +110,6 @@ public class JessUtil {
          if(grain.equals("true")){
            if(gf.getGrain() > 0)  
               gf.setGrain(gf.getGrain() - 1);
-           System.out.println("current grain on grid: " + gf.getX() + "|"+gf.getY()+" is: " + gf.getGrain());   
            jess.store("pickup_grain", "false");
          }
          
