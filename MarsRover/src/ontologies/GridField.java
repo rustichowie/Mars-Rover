@@ -10,6 +10,7 @@ public class GridField implements Serializable {
 	private boolean spaceship;
 	private int numberOfRocks;
 	private int grain;
+        private boolean cluster_found;
 	private int signalStrength;
         private boolean obstacle;
         private boolean came_from;
@@ -27,9 +28,11 @@ public class GridField implements Serializable {
                 this.signalStrength = 0;
                 this.obstacle = false;
                 this.came_from = false;
+                this.cluster_found = false;
 	}
 	
-	public GridField(boolean left, boolean right, boolean top, boolean bottom, boolean spaceship, int numberOfRocks, int grain, int signalStrength, boolean obstacle, int x, int y){
+	public GridField(boolean left, boolean right, boolean top, boolean bottom, boolean spaceship,
+                            int numberOfRocks, int grain, int signalStrength, boolean obstacle, int x, int y, boolean cluster_found){
 		this.left = left;
 		this.right = right;
 		this.top = top;
@@ -42,6 +45,7 @@ public class GridField implements Serializable {
                 this.came_from = false;
                 this.x = x;
                 this.y = y;
+                this.cluster_found = cluster_found;
 	}
 	
 	public boolean hasLeft() {
@@ -125,6 +129,14 @@ public class GridField implements Serializable {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public boolean isCluster_found() {
+        return cluster_found;
+    }
+
+    public void setCluster_found(boolean cluster_found) {
+        this.cluster_found = cluster_found;
     }
 	
 }

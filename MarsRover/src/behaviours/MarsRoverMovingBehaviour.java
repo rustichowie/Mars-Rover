@@ -46,28 +46,24 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
 
         try {
             if (current.hasLeft()) {
-                System.out.println("has left");
                 left = map[myAgent.getPosX() - 1][myAgent.getPosY()];
             } else {
-                left = new GridField(false, true, false, false, false, 0, 0, 0, true, 0, 0);
+                left = new GridField(false, true, false, false, false, 0, 0, 0, true, 0, 0, false);
             }
             if (current.hasRight()) {
-                System.out.println("has right");
                 right = map[myAgent.getPosX() + 1][myAgent.getPosY()];
             } else {
-                right = new GridField(true, false, false, false, false, 0, 0, 0, true, 0, 0);
+                right = new GridField(true, false, false, false, false, 0, 0, 0, true, 0, 0, false);
             }
             if (current.hasBottom()) {
-                System.out.println("has bottom");
                 bottom = map[myAgent.getPosX()][myAgent.getPosY() + 1];
             } else {
-                bottom = new GridField(false, false, true, false, false, 0, 0, 0, true, 0, 0);
+                bottom = new GridField(false, false, true, false, false, 0, 0, 0, true, 0, 0, false);
             }
             if (current.hasTop()) {
-                System.out.println("has top");
                 top = map[myAgent.getPosX()][myAgent.getPosY() - 1];
             } else {
-                top = new GridField(false, false, false, true, false, 0, 0, 0, true, 0, 0);
+                top = new GridField(false, false, false, true, false, 0, 0, 0, true, 0, 0, false);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Test: 1");
@@ -88,14 +84,12 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
                 myAgent.setAlerting(false);
                 
             }
-            System.out.println("JAVA: alerting - " + myAgent.isAlerting());
             util.modifyRover("(modify ?rover (cluster_found " + myAgent.isAlerting() + "))");
             util.pickup(change, myAgent);
             util.drop(myAgent);
             util.dropGrain(change);
             util.pickUpGrain(change);
             
-            System.out.println("Current: " + current.getX() + " | " + current.getY());
             
 
 
@@ -110,7 +104,6 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
 
             switch (direction) {
                 case "left":
-                    System.out.println("Going: " + direction);
 
                     current = map[current.getX() - 1][current.getY()];
                     myAgent.setPosX(current.getX());
@@ -148,6 +141,7 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
                 } else {
                     updateRover.setContent(current.getX() + "-" + current.getY());
                 }
+                myAgent.updateGridField(change);
                 inform.setContentObject(change);
                 myAgent.send(updateRover);
                 myAgent.send(inform);

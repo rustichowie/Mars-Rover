@@ -24,8 +24,10 @@ public class JessUtil {
      */
     public JessUtil(MarsRoverAgent agent, String jessFile) {
         jess = new Rete();
+        myAgent = agent;
         try {
             jess.batch(jessFile);
+            jess.store("active_cluster", "false");
             String rover = "(bind ?rover (assert (rover (name "+agent.getLocalName()+") (carrying " + agent.hasRock()+")(cluster_found "+agent.isAlerting()+") )))";
             this.makeassert(rover);
             jess.run();
@@ -71,7 +73,16 @@ public class JessUtil {
             pickup = "false";
         
         if(pickup.equals("true")){
-            gf.setNumberOfRocks(gf.getNumberOfRocks() - 1);
+            
+            if(gf.getNumberOfRocks() > 1)
+                gf.setCluster_found(true);
+            if(gf.getNumberOfRocks() > 0){
+                gf.setNumberOfRocks(gf.getNumberOfRocks() - 1);
+                System.out.println("Rover: "+myAgent.getLocalName()+" current rocks on grid: " + gf.getX()+"|"+gf.getY()+" is: " + gf.getNumberOfRocks());
+            }
+            if(gf.getNumberOfRocks() <= 1){
+                jess.store("active_cluster", "false");
+            }
             rover.setHasRock(true);
             jess.store("pickup", "false");
         }    
@@ -95,11 +106,14 @@ public class JessUtil {
             grain = (String)jess.fetch("pickup_grain").externalAddressValue(null);
         else
             grain = "false";
-         if(grain.equals("true")){
-            gf.setGrain(gf.getGrain() - 1);
-            jess.store("pickup_grain", "false");
-         }
         
+         if(grain.equals("true")){
+           if(gf.getGrain() > 0)  
+              gf.setGrain(gf.getGrain() - 1);
+           System.out.println("current grain on grid: " + gf.getX() + "|"+gf.getY()+" is: " + gf.getGrain());   
+           jess.store("pickup_grain", "false");
+         }
+         
        
     }
     
@@ -110,12 +124,17 @@ public class JessUtil {
     
     public void dropGrain(GridField gf) throws JessException{
         String grain = "";
-        if(jess.fetch("cluster_found") != null)
-            grain = (String)jess.fetch("cluster_found").externalAddressValue(null);
+        
+        if(jess.fetch("drop_grain") != null)
+            grain = (String)jess.fetch("drop_grain").externalAddressValue(null);
         else
             grain = "false";
-         if(grain.equals("true"))
+        
+        if(grain.equals("true")){
             gf.setGrain(2);
+            jess.store("drop_grain", "false");
+        }
+        
     }
     
     public boolean alert() throws JessException{
@@ -125,6 +144,7 @@ public class JessUtil {
         else
             alert = "false";
         
+        jess.store("alert", "false");
         if(alert.equals("true"))
             return true;
         else
@@ -134,20 +154,20 @@ public class JessUtil {
         
         String left_assert = "(assert (gridbox (direction left) (signal "+left.getSignalStrength()+")"
                                     + " (obstacle "+left.isObstacle()+") (rocks "+left.getNumberOfRocks()+")"
-                                        + " (grain "+left.getGrain()+") (came_from "+left.isCame_from()+") (is_spaceship "+left.isSpaceship()+")))";
+                                        + " (grain "+left.getGrain()+") (came_from "+left.isCame_from()+")(cluster_found "+left.isCluster_found()+") (is_spaceship "+left.isSpaceship()+")))";
         String right_assert = "(assert (gridbox (direction right) (signal "+right.getSignalStrength()+")"
                                     + " (obstacle "+right.isObstacle()+") (rocks "+right.getNumberOfRocks()+")"
-                                        + " (grain "+right.getGrain()+") (came_from "+right.isCame_from()+") (is_spaceship "+right.isSpaceship()+")))";
+                                        + " (grain "+right.getGrain()+") (came_from "+right.isCame_from()+")(cluster_found "+right.isCluster_found()+") (is_spaceship "+right.isSpaceship()+")))";
         String top_assert = "(assert (gridbox (direction top) (signal "+top.getSignalStrength()+")"
                                     + " (obstacle "+top.isObstacle()+") (rocks "+top.getNumberOfRocks()+")"
-                                        + " (grain "+top.getGrain()+") (came_from "+top.isCame_from()+") (is_spaceship "+top.isSpaceship()+")))";
+                                        + " (grain "+top.getGrain()+") (came_from "+top.isCame_from()+")(cluster_found "+top.isCluster_found()+") (is_spaceship "+top.isSpaceship()+")))";
 
         String bottom_assert = "(assert (gridbox (direction bottom) (signal "+bottom.getSignalStrength()+")"
                                     + " (obstacle "+bottom.isObstacle()+") (rocks "+bottom.getNumberOfRocks()+")"
-                                        + " (grain "+bottom.getGrain()+") (came_from "+bottom.isCame_from()+")"
+                                        + " (grain "+bottom.getGrain()+")(cluster_found "+bottom.isCluster_found()+") (came_from "+bottom.isCame_from()+")"
                                             + " (is_spaceship "+bottom.isSpaceship()+")))";
          String current_assert = "(assert (gridbox (direction this) (signal "+current.getSignalStrength()+")"
-                                    + " (obstacle "+current.isObstacle()+") (rocks "+current.getNumberOfRocks()+")"
+                                    + " (obstacle "+current.isObstacle()+")(cluster_found "+current.isCluster_found()+") (rocks "+current.getNumberOfRocks()+")"
                                         + " (grain "+current.getGrain()+") (came_from "+current.isCame_from()+") (is_spaceship "+current.isSpaceship()+")))";
         
         this.makeassert(left_assert);
