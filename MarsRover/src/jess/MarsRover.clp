@@ -1,5 +1,8 @@
+;java objects that is used for some of the reasoning
 (bind ?rand (new java.util.Random))
 (bind ?directions (new java.util.ArrayList))
+
+;gridbox template
 (deftemplate gridbox
     (slot direction)
     (slot obstacle)
@@ -11,17 +14,19 @@
     (slot cluster_found)
 )
 
+;rover template
 (deftemplate rover
     (slot name)
     (slot carrying)
     (slot cluster_found)
 )
-
+;action template
 (deftemplate action
 	(slot do)
 )
 
-
+;main method, the rover will search it's current location and see if there are rocks or clusters there
+;Depending on this he will do different things.
 (defrule search
     ?this <- (gridbox (direction this) (signal ?this_signal) (cluster_found ?this_cluster_found) (obstacle ?this_obs) (rocks ?this_rocks) (grain ?this_grain) (came_from ?this_came_from) (is_spaceship ?this_is_spaceship))
 =>
@@ -41,7 +46,11 @@
     )
     else (assert(action(do move))))
 )
-
+;Logic for moving the rover, it has 4 states, and will behaviour differently depending on them.
+;1.search mode: In searchmode it will just move randomly and look for rocks. uses function (next_direction)
+;2.going home mode: The rover either has a rock or has been alerted of a cluster somewhere, and will go home to spaceship.
+;3.follow grain to cluster: The rover tries to follow a grain path back to a cluster.
+;4.follow grain home: The rover tries to follow a grain path home to the spaceship.
 (defrule move_rover
     ?left <- (gridbox (direction left) (signal ?l_signal)(cluster_found ?l_cluster_found) (obstacle ?l_obs) (rocks ?l_rocks) (grain ?l_grain) (came_from ?l_came_from) (is_spaceship ?l_is_spaceship))
     ?right <- (gridbox (direction right) (signal ?r_signal)(cluster_found ?r_cluster_found) (obstacle ?r_obs) (rocks ?r_rocks) (grain ?r_grain) (came_from ?r_came_from) (is_spaceship ?r_is_spaceship))
@@ -54,6 +63,7 @@
     
 
     ; Rover is carrying AND At spaceship
+    ;Will drop rock, and possibly alert of a cluster
     (if (and (= ?rover.carrying true) (= ?this.is_spaceship true)) then
         (assert (action (do drop)))
         (if (= (fetch following_grain) true) then
@@ -63,22 +73,25 @@
     (if (= ?rover.cluster_found true) then
         (store active_cluster true))
     
-    ; At spaceship AND Rover is cluster_found
+    ; At spaceship, rover is no longer alerting of a found cluster.
     (if (= ?this.is_spaceship true) then
         (modify ?rover (cluster_found false)))
     
-    ; Rover NOT carrying AND Rover NOT cluster_found    OR    At spaceship
+    ; Rover NOT carrying AND Rover NOT cluster_found AND no active cluster
     (if (and(and(= ?rover.carrying false)(= ?rover.cluster_found false))(= (fetch active_cluster) false)) then
-        (next_direction ?left ?right ?top ?bottom ?this)  
+        (next_direction ?left ?right ?top ?bottom ?this)
+    ;Rover NOT carrying AND active cluster AND not alerting of another cluster    
     else (if (and(and(= ?rover.carrying false)(= (fetch active_cluster) true))(= ?rover.cluster_found false)) then
          (follow_grain_to_cluster ?left ?right ?top ?bottom ?this)
+    ;Rover is carrying AND active cluster
     else (if (and(= ?rover.carrying true)(= (fetch active_cluster) true)) then
          (follow_grain_home ?left ?right ?top ?bottom ?this)
+    ;Rover is alerting of cluster OR Rover is carrying
     else (if (or (= ?rover.cluster_found true)(= ?rover.carrying true) ) then       
         (go_home ?left ?right ?top ?bottom ?this)
     ))))
 
-    ; List of directions bigger than 0
+    ; picks next direction to go.
     (if (<= (?directions size) 0) then 
         (printout t ?rover.name " is going back" crlf)
         (go_back ?left ?right ?top ?bottom) 
@@ -99,7 +112,7 @@
 
 
 
-
+;Makes the rover head home to spaceship
 (deffunction go_home(?left ?right ?top ?bottom ?this)
     (?directions clear)
     (if (and(= (fetch active_cluster) true)(= ?rover.cluster_found false)) then
@@ -122,6 +135,7 @@
 
 )		
 
+;makes the rover search randomly
 (deffunction next_direction (?left ?right ?top ?bottom ?this)
     (?directions clear)
     
@@ -144,6 +158,7 @@
       (return nil)
 )   
 
+;makes the rover follow a path of grain to a cluster
 (deffunction follow_grain_to_cluster (?left ?right ?top ?bottom ?this) 
     (?directions clear)
     (assert (action (do pickup_grain)))
@@ -170,6 +185,7 @@
      ))))
 )
 
+;makes the rover follow a path of grain back to spaceship
 (deffunction follow_grain_home (?left ?right ?top ?bottom ?this) 
     (?directions clear)
     (if (and(= (fetch active_cluster) true)(= ?rover.cluster_found false)) then
@@ -191,7 +207,7 @@
     ))))
 )
 
-
+;if the rover can't go anywhere, then it goes back
 (deffunction go_back (?left ?right ?top ?bottom)
     (foreach ?dir (create$ ?left ?right ?top ?bottom)
         (if (= ?dir.came_from true) then
@@ -199,7 +215,7 @@
             (break)))
             
 )
-
+;checks for obstacles, etc..
 (deffunction check_dir (?box)
      (if (= ?box.obstacle true) then
         
@@ -212,6 +228,7 @@
      
         (return true)
 )
+;if the rover finds a rock, it picks it up
 (defrule pickup_rock
     ?action <- (action (do pickup))
 =>
@@ -221,7 +238,7 @@
     (retract ?action)
 )
 
-
+;if rover found a cluster
 (defrule cluster
     ?action <- (action (do cluster_found))
 =>
@@ -231,7 +248,7 @@
     (retract ?action)
 )
 
-
+;if rover is at spaceship and carrying a rock, it drops it
 (defrule drop_rock
     ?action  <- (action(do drop))
 =>
@@ -239,7 +256,7 @@
     (modify ?rover (carrying false))
     (retract ?action)
 )
-
+;if going to spaceship from cluster, drops grain
 (defrule drop_grain
     ?action <- (action (do drop_grain))
 =>
@@ -247,6 +264,7 @@
     (retract ?action)
 )
 
+;if going to cluster from spaceship, picks up grain
 (defrule pickup_grain
     ?action <- (action (do pickup_grain))
 =>
