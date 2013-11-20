@@ -85,11 +85,7 @@ public class SpaceshipAgent extends Agent {
         }
         
         JButton button = new JButton("Start Rovers");
-        JButton moveNorth = new JButton("Move North");
-        JButton moveEast = new JButton("Move East");
-        JButton moveSouth = new JButton("Move South");
-        JButton moveWest = new JButton("Move West");
-
+     
         JPanel compPanel = new JPanel();
         compPanel.setLayout(null);
         compPanel.add( gridComp, BorderLayout.CENTER );
@@ -99,11 +95,7 @@ public class SpaceshipAgent extends Agent {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(button);
-        buttonPanel.add(moveNorth);
-        buttonPanel.add(moveEast);
-        buttonPanel.add(moveSouth);
-        buttonPanel.add(moveWest);
-
+     
         mapFrame.getContentPane().add( compPanel, BorderLayout.CENTER );
         mapFrame.getContentPane().add( boardComp, BorderLayout.WEST );
         mapFrame.getContentPane().add( buttonPanel, BorderLayout.SOUTH );
@@ -121,7 +113,7 @@ public class SpaceshipAgent extends Agent {
 
         printBoard();
 
-        initButtonClicks(button, moveNorth, moveEast, moveSouth, moveWest );
+        initButtonClicks(button);
 
         
 
@@ -316,51 +308,15 @@ public class SpaceshipAgent extends Agent {
         }
     }    
     
-    public void initButtonClicks(JButton button, JButton north, JButton east, JButton south, JButton west){
+    public void initButtonClicks(JButton button){
         
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
                 agent.addBehaviour(new SendLocationBehaviour(agent, map));
-            
             }
         });
         
-        north.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                roverComp.get(0).moveNorth();
-            
-            }
-        });
-        
-        east.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                roverComp.get(0).moveEast();
-            
-            }
-        });
-        
-        south.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                roverComp.get(0).moveSouth();
-            
-            }
-        });
-        
-        west.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                roverComp.get(0).moveWest();
-            
-            }
-        });
     }
 }

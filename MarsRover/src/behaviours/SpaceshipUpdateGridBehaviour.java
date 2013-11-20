@@ -44,9 +44,9 @@ public class SpaceshipUpdateGridBehaviour extends CyclicBehaviour{
             sender = message.getSender();
             
             myAgent.updateGridField(field);
-            System.out.println("Update field");
             
             message = new ACLMessage( ACLMessage.INFORM );
+            message.setConversationId("update-grid");
             for(AID aid : myAgent.getRovers()){
                 if(!aid.equals( sender )){
                     message.addReceiver( aid );
@@ -58,8 +58,7 @@ public class SpaceshipUpdateGridBehaviour extends CyclicBehaviour{
                 System.out.println("-< Spaceship Agent >- Failed assert serializable object to message. ");
                 Logger.getLogger(SpaceshipUpdateGridBehaviour.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("---< Spaceship Agent>---");
-            System.out.println("Sending grid update to other rover!");
+            System.out.println("");
             System.out.println("");
             myAgent.send( message );
         } else {

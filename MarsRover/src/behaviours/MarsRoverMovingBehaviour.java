@@ -90,9 +90,8 @@ public class MarsRoverMovingBehaviour extends CyclicBehaviour {
             util.dropGrain(change);
             util.pickUpGrain(change);
             
+            System.out.println("Grain on gridfield: " + change.getX()+"|"+change.getY()+ " :" + change.getGrain());
             
-
-
             String direction = util.getNextDirection();
 
             for (int x = 0; x < map.length; x++) {

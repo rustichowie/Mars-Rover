@@ -45,7 +45,6 @@ public class SpaceshipUpdateRoverBehaviour extends CyclicBehaviour{
                     myAgent.sendAlert( sender );
                 }
             }
-            System.out.println("Update rover");
             
         } else {
             block();

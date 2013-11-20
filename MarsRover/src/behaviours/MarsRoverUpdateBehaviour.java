@@ -30,13 +30,16 @@ public class MarsRoverUpdateBehaviour extends CyclicBehaviour {
     @Override
     public void action() {
         
-        MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+        MessageTemplate mt = MessageTemplate.and(
+                MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                 MessageTemplate.MatchConversationId("update-grid"));
         
         ACLMessage msg = agent.receive(mt);
        if(msg != null){
             try {
                 GridField field = (GridField) msg.getContentObject();
+                System.out.println("Rover: " + myAgent.getLocalName() + " Grain on gridfield: " + field.getX()+"|"+field.getY()+ " :" + field.getGrain());
+            
                 agent.updateGridField(field);
             } catch (UnreadableException ex) {
                 Logger.getLogger(MarsRoverUpdateBehaviour.class.getName()).log(Level.SEVERE, null, ex);
