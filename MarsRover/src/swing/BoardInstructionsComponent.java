@@ -5,11 +5,10 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 
-
 public class BoardInstructionsComponent extends JComponent {
         
-    private String spaceship;
-    private String obstacles;
+    private String spaceship; 
+    private String obstacles; 
     private String rocks;
 
     public BoardInstructionsComponent(String spaceship, String obstacles, String rocks) {
@@ -24,13 +23,25 @@ public class BoardInstructionsComponent extends JComponent {
         this.rocks = "";
     }
 
+    /**
+     * Update variables and repaint.
+     * @param spaceship
+     * @param obstacles
+     * @param rocks 
+     */
     public void addText(String spaceship, String obstacles, String rocks){
         this.spaceship = spaceship;
         this.obstacles = obstacles;
         this.rocks = rocks;
         repaint();
     }
-	
+
+    /**
+     * Callback function for repaint.
+     * Draws a rectangle with the variables.
+     * Holds information of what the GridMap colors represents.
+     * @param g 
+     */
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);

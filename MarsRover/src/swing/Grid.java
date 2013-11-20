@@ -2,14 +2,18 @@ package swing;
 
 import java.awt.Color;
 
+
 public class Grid {
-	
-	private int x;
-	private int y;
-	private int width;
-	private int heigth;
-	private Color color;
-        private String text;
+    
+        /**
+         * This class holds information about what the GridComponent is going to draw.
+         */
+	private int x;          // Where to draw the grid on the screen(x)
+	private int y;          // Where to draw the grid on the screen(y)
+	private int width;      // Width of the object to be drawn
+	private int heigth;     // Height of the object to be drawn 
+	private Color color;    // What color to use
+        private String text;    // Text to drawn inside of grid
 
     public Grid(int x, int y, int width, int heigth, Color color, String text) {
         this.x = x;

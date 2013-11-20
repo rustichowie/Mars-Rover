@@ -2,18 +2,15 @@ package swing;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JComponent;
 
-
 public class RoverComponent extends JComponent {
 	
-    private int roverX;
-    private int roverY;
-    private String roverName;
-    private int gridSize;
+    private int roverX;         // X coordinate to the rover.
+    private int roverY;         // Y coordiante to the rover.
+    private String roverName;   // Name of the rover.
+    private int gridSize;       // Size of the Grid. Used to calculate where to draw the rover in the grid.
 
     public RoverComponent(int x, int y, String name, int gridSize) {
         this.roverX = x;
@@ -29,32 +26,63 @@ public class RoverComponent extends JComponent {
         this.gridSize = 0;
     }
     
+    /**
+     * Move the rover 1 north.
+     * Used in test face of the implementation of the application.
+     * Then repaint.
+     */
     public void moveNorth(){
         roverY -= 1;
         repaint();
     }
     
+    /**
+     * Move the rover 1 east.
+     * Used in test face of the implementation of the application.
+     * Then repaint.
+     */
     public void moveEast(){
         roverX += 1;
         repaint();
     }
     
-    public void moveSouth(){
+    /**
+     * Move the rover 1 south.
+     * Used in test face of the implementation of the application.
+     * Then repaint.
+     */    public void moveSouth(){
         roverY += 1;
         repaint();
     }
     
+    /**
+     * Move the rover 1 west.
+     * Used in test face of the implementation of the application.
+     * Then repaint.
+     */     
     public void moveWest(){
         roverX -= 1;
         repaint();
     }
     
+    /**
+     * Move the rover to the coordinates x and y.
+     * Then repaint.
+     * @param x
+     * @param y 
+     */
     public void moveRover(int x, int y){
         roverX = x;
         roverY = y;
         repaint();
     }
 
+    /**
+     * Calculates the position of the rover dependent of the grid.
+     * Draw the rover on the screen as a oval circle.
+     * Draw the name on the rover.
+     * @param g 
+     */
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -67,6 +95,10 @@ public class RoverComponent extends JComponent {
             
     }
     
+    /**
+     * Adjusts the rover to the middle of a grid.
+     * @return 
+     */
     public int adjustMid(){
         return (gridSize/2)-6;
     }
